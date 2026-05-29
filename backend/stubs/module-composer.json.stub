@@ -1,0 +1,23 @@
+{
+    "name": "app/{{ name }}",
+    "description": "{{ Name }} module",
+    "type": "library",
+    "version": "1.0",
+    "license": "proprietary",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "{{ Namespace }}\\{{ Name }}\\": "{{ SrcFolder }}/",
+            "{{ Namespace }}\\{{ Name }}\\{{ DatabaseNs }}\\{{ FactoriesNs }}\\": "{{ DatabaseFolder }}/{{ FactoriesFolder }}/",
+            "{{ Namespace }}\\{{ Name }}\\{{ DatabaseNs }}\\{{ SeedersNs }}\\": "{{ DatabaseFolder }}/{{ SeedersFolder }}/"
+        }
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "{{ Namespace }}\\{{ Name }}\\{{ Name }}ServiceProvider"
+            ]
+        }
+    }
+}

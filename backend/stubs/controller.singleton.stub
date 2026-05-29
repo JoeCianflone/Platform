@@ -1,0 +1,38 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Illuminate\Http\JsonResponse;
+use Inertia\Response;
+use {{ rootNamespace }}Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+class {{ class }} extends Controller
+{
+    public function create(): never
+    {
+        abort(404);
+    }
+
+    public function store(Request $request): never
+    {
+        abort(404);
+    }
+
+    public function show(): JsonResponse|Response
+    {
+    }
+
+    public function edit(): JsonResponse|Response
+    {
+    }
+
+    public function update(Request $request): JsonResponse|Response
+    {
+    }
+
+    public function destroy(): never
+    {
+        abort(404);
+    }
+}

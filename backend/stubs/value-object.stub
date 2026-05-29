@@ -1,0 +1,21 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use App\Concerns\Data\ValueObjects\CastToArray;
+use App\Concerns\Data\ValueObjects\CheckEquality;
+use App\Concerns\Data\ValueObjects\CastToString;
+use App\Concerns\Data\ValueObjects\ValueObjectMaker;
+use App\Contracts\ValueObject;
+
+final readonly class {{ class }} implements ValueObject
+{
+    use CastToArray;
+    use CastToString;
+    use CheckEquality;
+    use ValueObjectMaker;
+
+    private function __construct(
+    ) {}
+
+}

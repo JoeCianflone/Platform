@@ -1,0 +1,15 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use App\Contracts\DataObject;
+use App\Concerns\Data\DataObject\DataObjectMaker;
+
+final readonly class {{ class }} implements DataObject
+{
+    use DataObjectMaker;
+
+    public function __construct(
+        public string $foo,
+    ) {}
+}

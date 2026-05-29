@@ -1,0 +1,25 @@
+<?php declare(strict_types=1);
+
+namespace {{ Namespace }}\{{ Name }};
+
+use {{ Namespace }}\Providers\ModuleServiceProvider;
+
+final class {{ Name }}ServiceProvider extends ModuleServiceProvider
+{
+    protected function modulePath(): string
+    {
+        return dirname(__DIR__);
+    }
+
+    public function boot(): void
+    {
+        parent::boot();
+    }
+
+    public function register(): void
+    {
+        parent::register();
+
+        // $this->app->bind(ExampleAction::class, Example::class);
+    }
+}

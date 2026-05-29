@@ -1,0 +1,20 @@
+{
+    "preset": "psr12",
+    "rules": {
+        "single_line_empty_body": true,
+        "declare_strict_types": true,
+        "blank_line_after_namespace": true,
+        "blank_line_after_opening_tag": false,
+        "linebreak_after_opening_tag": false,
+        "modernize_types_casting": true,
+        "no_superfluous_elseif": true,
+        "no_useless_else": true,
+        "assign_null_coalescing_to_coalesce_equal": true,
+        "ordered_class_elements": {
+            "sort_algorithm": "alpha"
+        },
+        "ordered_imports": {
+            "sort_algorithm": "length"
+        }
+    }
+}

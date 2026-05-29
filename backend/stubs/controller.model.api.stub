@@ -1,0 +1,32 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Illuminate\Http\JsonResponse;
+use Inertia\Response;
+use {{ namespacedModel }};
+use {{ rootNamespace }}Http\Controllers\Controller;
+use {{ namespacedRequests }}
+
+class {{ class }} extends Controller
+{
+    public function index(): JsonResponse|Response
+    {
+    }
+
+    public function store({{ storeRequest }} $request): JsonResponse|Response
+    {
+    }
+
+    public function show({{ model }} ${{ modelVariable }}): JsonResponse|Response
+    {
+    }
+
+    public function update({{ updateRequest }} $request, {{ model }} ${{ modelVariable }}): JsonResponse|Response
+    {
+    }
+
+    public function destroy({{ model }} ${{ modelVariable }}): JsonResponse|Response
+    {
+    }
+}

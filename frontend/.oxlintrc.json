@@ -1,0 +1,32 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "plugins": ["vue", "typescript"],
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "ignorePatterns": ["dist/**", "dist-ssr/**", "coverage/**", "node_modules/**", "wayfinder/**"],
+  "rules": {
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "typescript/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["../*", "./**/.."],
+            "message": "Use the @ alias instead of relative paths (e.g. @/components/Foo.vue not ../components/Foo.vue)"
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["**/__tests__/**/*.{ts,vue}", "**/*.test.{ts,vue}", "**/*.spec.{ts,vue}"],
+      "env": {
+        "vitest/globals": true
+      }
+    }
+  ]
+}
