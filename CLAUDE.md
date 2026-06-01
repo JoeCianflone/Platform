@@ -203,7 +203,7 @@ modules/{Name}/
     │   └── Resolvers/
     ├── Data/
     │   ├── Collections/          # Typed DTO collections
-    │   ├── DomainObjects/        # DTOs (ItemDataObject.php)
+    │   ├── DataObjects/        # DTOs (ItemDataObject.php)
     │   ├── Snapshots/
     │   └── ValueObjects/
     ├── Domain/
@@ -276,11 +276,11 @@ All standard `make:*` commands accept a `--module=Name` flag that routes the fil
 
 **Custom make commands (module-aware):**
 
-| Command                 | Output location       | Notes                                                                           |
-| ----------------------- | --------------------- | ------------------------------------------------------------------------------- |
-| `make:dataobject Name`  | `Data/DomainObjects/` | Generates `{Name}DataObject` — safe to pass with or without `DataObject` suffix |
-| `make:valueobject Name` | `Data/ValueObjects/`  | Generates `{Name}` class with VO contracts                                      |
-| `make:scope Name`       | `Domain/Scopes/`      | Generates Eloquent Scope class                                                  |
+| Command                 | Output location      | Notes                                                                           |
+| ----------------------- | -------------------- | ------------------------------------------------------------------------------- |
+| `make:dataobject Name`  | `Data/DataObjects/`  | Generates `{Name}DataObject` — safe to pass with or without `DataObject` suffix |
+| `make:valueobject Name` | `Data/ValueObjects/` | Generates `{Name}` class with VO contracts                                      |
+| `make:scope Name`       | `Domain/Scopes/`     | Generates Eloquent Scope class                                                  |
 
 **Standard commands with `--module` support:**
 
@@ -643,13 +643,13 @@ HttpResponse::SERVER_ERROR  // 500
 
 Cross-module data flows via **Events** (async) or **Snapshots** (sync). Never raw models, never DataObjects, never direct Domain imports.
 
-| Scenario                              | Use                              |
-| ------------------------------------- | -------------------------------- |
-| Data must exist before return         | Query contract → Snapshot (sync) |
-| Recalculate a derived value           | Sync call                        |
-| Send push notification                | Event                            |
-| Update a feed or aggregate            | Event                            |
-| Log audit trail                       | Event                            |
+| Scenario                      | Use                              |
+| ----------------------------- | -------------------------------- |
+| Data must exist before return | Query contract → Snapshot (sync) |
+| Recalculate a derived value   | Sync call                        |
+| Send push notification        | Event                            |
+| Update a feed or aggregate    | Event                            |
+| Log audit trail               | Event                            |
 
 Event payloads always carry a Snapshot, never a model: `event(new ItemCreated($item->toSnapshot()))`.
 
@@ -830,7 +830,6 @@ frontend/
 │   ├── {YourModule}/
 │   └── …
 ├── types/                # Shared TS declarations + Wayfinder-generated types (never edit manually)
-└── wayfinder/            # Wayfinder-generated route helpers (never edit manually)
 ```
 
 **Dependency rule:**
@@ -850,7 +849,7 @@ pages → domains → components
 import AppLayout from '@/components/AppLayout.vue'
 import { useAuth } from '@/composables/useAuth'
 import ItemWidget from '@/domains/YourModule/ItemWidget.vue'
-import { route } from '@/wayfinder'
+import { route } from '@/types'
 
 // ❌ Wrong
 import AppLayout from '../components/AppLayout.vue'
@@ -889,7 +888,7 @@ Backend is the source of truth. Frontend uses Wayfinder-generated routes. No str
 
 ```typescript
 // ✅ Correct
-import { route } from '@/wayfinder'
+import { route } from '@/types'
 router.post(route('items.create', { slug: item.slug }), data)
 
 // ❌ Wrong
@@ -1040,10 +1039,10 @@ php artisan config:show app.name                    # read config values
 
 ## Rate Limiting
 
-| Endpoint              | Limit          |
-| --------------------- | -------------- |
-| `POST /api/endpoint`  | 10 per minute  |
-| `POST /api/other`     | 30 per minute  |
+| Endpoint             | Limit         |
+| -------------------- | ------------- |
+| `POST /api/endpoint` | 10 per minute |
+| `POST /api/other`    | 30 per minute |
 
 ---
 

@@ -1,6 +1,112 @@
-# YourApp
+# Platform
 
-A modular Laravel 13 + Inertia 3 + Vue 3 + TypeScript application starter.
+A personal application skeleton for building production-ready Laravel + Inertia + Vue apps. Not a framework, not a package — an opinionated starting point that carries hard-won architectural decisions so new projects don't start from zero.
+
+---
+
+## Philosophy
+
+Most projects share the same problems: where does business logic live, how do modules talk to each other, what does a controller actually own, how do you keep things testable. This skeleton answers those questions once and enforces the answers mechanically.
+
+The architecture is a **modular monolith** — one deployable unit, internally structured like microservices. Modules own their data, expose contracts, and never reach into each other's internals. Cross-module communication happens through events and snapshots, never shared models.
+
+Key beliefs this project encodes:
+
+- **Contracts over concretions.** Controllers and workflows depend on interfaces, never concrete classes. Swapping implementations doesn't require touching callers.
+- **DTOs at every boundary.** No raw arrays into actions, no Eloquent models out of actions. Data has a known shape everywhere.
+- **Enforcement over convention.** PHPStan, Pest architecture tests, and ESLint enforce the rules automatically. Violations fail CI, not code review.
+- **Thin controllers.** A controller is a request adapter. It validates input, builds a DTO, calls a contract, and returns a response. Nothing else.
+- **One response shape.** Every response — API or Inertia — uses the same envelope via `app_response()`. The frontend always knows what it's getting.
+
+The full architecture reference lives in `CLAUDE.md`. If you're building on top of this, read it before writing a line of code.
+
+---
+
+## Using This Template
+
+### Creating a new project
+
+This repo is a GitHub Template. On the repo page, click **Use this template → Create a new repository**. Name it after your project. You get a clean copy with no shared git history.
+
+After creating your project:
+
+```bash
+git clone git@github.com:you/your-new-project.git
+cd your-new-project
+
+# Add platform as a remote so you can pull future updates
+git remote add platform git@github.com:you/platform.git
+git fetch platform
+
+# Tag the platform version you started from
+git tag platform-base-v1.0.0
+git push origin platform-base-v1.0.0
+```
+
+### Pulling platform updates into an existing project
+
+When platform adds something worth having — a new CI step, a security fix, a new architectural pattern:
+
+```bash
+git fetch platform
+git log platform/main --oneline   # see what's new since your tag
+
+# Pull a specific commit (safest)
+git cherry-pick <commit-hash>
+
+# Or merge everything (use sparingly, resolve conflicts in modules/ in favour of your project)
+git merge platform/main
+```
+
+### What to rename after creating a project
+
+- `APP_NAME` in `.env`
+- Database name in `.env` (`DB_DATABASE`)
+- Herd site name in `Taskfile.yml` (`setup:herd` task)
+- `APP_URL` in `.env`
+- The root `package.json` `name` field in `frontend/`
+
+---
+
+## What's Included
+
+### Backend
+- **Laravel 13** with PHP 8.4 strict types throughout
+- **Modular monolith** structure — `php artisan make:module Name` scaffolds the full DDD layout
+- **Contract-driven architecture** — actions, queries, and cross-module communication all interface-bound
+- **AppResponse** — unified JSON/Inertia response envelope via `app_response()` helper
+- **Laravel Horizon** — queue management with `default` and `high` supervisors configured
+- **Laravel Reverb** — websockets, ready for local and production
+- **Laravel Cashier + Stripe** — billing and subscription management wired up
+- **Laravel Scout + Meilisearch** — full-text search
+- **Spatie Media Library** — file/media handling with S3/R2 support
+- **Spatie Laravel Permission** — roles and permissions
+- **Laravel Pennant** — feature flags
+- **Laravel Socialite** — OAuth (Google, Apple pre-configured)
+- **Filament** — admin panel
+- **Sentry** — error tracking (backend)
+
+### Frontend
+- **Vue 3 + TypeScript** with strict type checking
+- **Inertia 3** — no API layer needed, Inertia handles the bridge
+- **WebAwesome** — UI component library (`wa-button`, `wa-card`, etc.)
+- **Wayfinder** — type-safe route generation, no hardcoded URL strings
+- **Vitest** — frontend unit testing
+- **Oxlint + Oxfmt** — fast Rust-based linting and formatting
+- **Vite 8** — asset bundling with vendor chunk splitting (Vue, Inertia, WebAwesome split separately)
+- **Sentry** — error tracking (frontend)
+
+### CI/CD
+- **GitHub Actions** — two workflows:
+  - `ci.yml` — PHP (Pint, PHPStan, Pest) + frontend (type-check, lint, format, Vitest, build) + security audits on every PR and push to `main`
+  - `deploy.yml` — triggers Laravel Forge deploy webhook after CI passes on `main`
+- **PHPStan level 8** with Larastan, baseline committed
+- **Pest architecture tests** — module isolation, controller boundaries, workflow placement, final classes, immutability, strict types all enforced automatically
+
+### Security
+- **Security headers middleware** — CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy on every response
+- **CORS** configured (`CORS_ALLOWED_ORIGINS` env var)
+- **Rate limiting** — named `api` (60/min) and `auth` (5/min) limiters defined, ready to apply to routes
 
 ---
 
@@ -8,83 +114,81 @@ A modular Laravel 13 + Inertia 3 + Vue 3 + TypeScript application starter.
 
 | Layer           | Choice                                      |
 | --------------- | ------------------------------------------- |
-| Backend         | Laravel 13                                  |
+| Backend         | Laravel 13, PHP 8.4                         |
 | Frontend        | Inertia 3 + Vue 3 + TypeScript + WebAwesome |
-| Mobile          | NativePHP (optional)                        |
 | Database        | MySQL 8 + Redis                             |
 | Search          | Meilisearch                                 |
 | Media           | Spatie Media Library + S3/R2                |
 | Queues          | Laravel Horizon                             |
 | Websockets      | Laravel Reverb                              |
-| Package Manager | pnpm                                        |
-| Task Runner     | Task (task.dev)                             |
 | Payments        | Laravel Cashier + Stripe                    |
+| Admin           | Filament                                    |
+| Error tracking  | Sentry                                      |
+| Package manager | pnpm                                        |
+| Task runner     | Task (taskfile.dev)                         |
+| CI/CD           | GitHub Actions + Laravel Forge              |
+| Mobile (opt.)   | NativePHP                                   |
 
 ---
 
 ## Prerequisites
 
-Install these before anything else.
+| Tool | Version | Install |
+| ---- | ------- | ------- |
+| [Laravel Herd Pro](https://herd.laravel.com) | Latest | Download from herd.laravel.com |
+| [pnpm](https://pnpm.io) | 9+ | `brew install pnpm` |
+| [Task](https://taskfile.dev) | 3+ | `brew install go-task` |
 
-| Tool                                         | Version | Install                          |
-| -------------------------------------------- | ------- | -------------------------------- |
-| [Laravel Herd Pro](https://herd.laravel.com) | Latest  | Download from herd.laravel.com   |
-| [pnpm](https://pnpm.io)                      | 9+      | `brew install pnpm`              |
-| [Task](https://taskfile.dev)                 | 3+      | `brew install go-task`           |
-| [TypeScript](https://www.typescriptlang.org) | 5+      | Installed automatically via pnpm |
-| [Vite](https://vitejs.dev)                   | 6+      | Installed automatically via pnpm |
+**Herd Pro is required** — it bundles PHP 8.4, MySQL 8, Redis, and Mailpit. The free tier does not include MySQL or Redis.
 
-**Herd Pro is required** — it bundles MySQL 8, Redis, and Mailpit. The free tier does not include these services.
-
-Once Herd Pro is installed and running, verify your services are active in the Herd menubar app under **Services**. MySQL and Redis should both show as running before proceeding.
+Once Herd Pro is running, verify MySQL and Redis show as active in the Herd menubar app under **Services** before proceeding.
 
 ### Meilisearch
 
-Meilisearch is not bundled with Herd Pro and must be installed separately:
+Not bundled with Herd Pro, install separately:
 
 ```bash
 brew install meilisearch
 brew services start meilisearch
 ```
 
-Verify it's running at [http://localhost:7700](http://localhost:7700).
+Verify at [http://localhost:7700](http://localhost:7700).
 
 ---
 
 ## Getting Started
 
-### 1. Clone the repo
+### 1. Create the database
 
-```bash
-git clone git@github.com:your-org/your-app.git
-cd your-app
-```
+Open **Herd Pro → Database** (or TablePlus) and create a database with the same name as your `DB_DATABASE` env value.
 
-### 2. Create the database
-
-Open **Herd Pro → Database** (or TablePlus which Herd bundles) and create a database named `your_app`.
-
-### 3. Run setup
+### 2. Run setup
 
 ```bash
 task setup
 ```
 
-This runs in order:
+This runs in sequence:
 
 ```bash
-task setup:backend    # composer install, .env copy, key:generate, migrate, seed, storage:link
-task setup:frontend   # pnpm install, initial build
+task setup:backend    # composer install → cp .env.example .env → key:generate → migrate + seed → storage:link
+task setup:frontend   # pnpm install → build
 task setup:herd       # herd link + herd secure
 ```
 
-### 4. Manual steps (if you prefer or setup fails)
+> **PHP version:** Right-click the site in Herd → PHP Version → select **8.4**.
+
+Your app will be available at `https://your-app.test`.
+
+### 3. Manual steps (if setup fails or you prefer)
 
 ```bash
+# Root — .env lives at the monorepo root
+cp .env.example .env
+
 # Backend
 cd backend
 composer install
-cp .env.example .env
 php artisan key:generate
 php artisan migrate --seed
 php artisan storage:link
@@ -94,35 +198,23 @@ cd frontend
 pnpm install
 pnpm build
 
-# Register with Herd (or add via Herd UI → Sites)
-cd backend
+# Herd — run from monorepo root (public/ lives here)
 herd link your-app
 herd secure your-app
 ```
-
-Your app will be available at **https://your-app.test**
-
-> **PHP version:** Right-click the site in Herd → PHP Version → select **8.4**.
 
 ---
 
 ## Environment Configuration
 
-`.env.example` is committed with Herd Pro defaults pre-filled. After `cp .env.example .env` you should only need to add API keys.
+`.env.example` is committed with sensible local defaults. After copying, the minimum you need to change for local dev:
 
 ```dotenv
 APP_NAME="YourApp"
 APP_URL=https://your-app.test
-
-# Database — Herd Pro defaults (no password by default)
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
 DB_DATABASE=your_app
-DB_USERNAME=root
-DB_PASSWORD=
 
-# Redis — Herd Pro default
+# Redis (Herd Pro defaults)
 REDIS_CLIENT=phpredis
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
@@ -130,7 +222,7 @@ CACHE_STORE=redis
 QUEUE_CONNECTION=redis
 SESSION_DRIVER=redis
 
-# Mail — Herd Pro Mailpit (http://localhost:8025)
+# Mail — Herd Mailpit (view at http://localhost:8025)
 MAIL_MAILER=smtp
 MAIL_HOST=127.0.0.1
 MAIL_PORT=2525
@@ -138,127 +230,101 @@ MAIL_PORT=2525
 # Meilisearch
 SCOUT_DRIVER=meilisearch
 MEILISEARCH_HOST=http://127.0.0.1:7700
-MEILISEARCH_KEY=
-
-# Reverb (websockets)
-REVERB_APP_ID=your-app
-REVERB_APP_KEY=local
-REVERB_APP_SECRET=local
-REVERB_HOST=localhost
-REVERB_PORT=8080
-
-# Media (local for dev, S3/R2 for prod)
-FILESYSTEM_DISK=local
-
-# Socialite — Google
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GOOGLE_REDIRECT_URI=https://your-app.test/auth/google/callback
-
-# Socialite — Apple
-APPLE_CLIENT_ID=
-APPLE_CLIENT_SECRET=
-APPLE_REDIRECT_URI=https://your-app.test/auth/apple/callback
-
-# Stripe — Cashier
-STRIPE_KEY=pk_test_xxx
-STRIPE_SECRET=sk_test_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx
 ```
 
-> **OAuth credentials:** Only needed when working on the Auth module. Ask a team lead for shared staging credentials.
+The `.env.example` file contains commented production hardening values at the bottom — review these before going live.
 
 ---
 
 ## Daily Development
 
-Herd Pro manages the PHP server automatically — you don't need `artisan serve`. Just start the supporting services:
+Herd Pro manages the PHP server automatically. Just start the supporting services:
 
 ```bash
 task dev
 ```
 
-This starts in parallel:
-- Vite (frontend hot reload)
-- Horizon (queue worker)
-- Reverb (websockets)
+Starts in parallel: Vite (HMR), Horizon (queues), Reverb (websockets).
 
 Individual services:
 
 ```bash
-task dev:frontend     # Vite HMR only
+task dev:frontend     # Vite only
 task dev:queue        # Horizon only
 task dev:reverb       # Reverb only
-task dev:stripe       # Stripe webhook forwarding (requires Stripe CLI)
+task dev:stripe       # Stripe webhook forwarding (requires Stripe CLI: brew install stripe/stripe-cli/stripe)
 ```
 
-> **Stripe CLI:** Install via `brew install stripe/stripe-cli/stripe` then `stripe login`. Required when working on the Billing module to receive webhook events locally.
-
-> **Mail:** Herd Pro includes Mailpit. View intercepted emails at [http://localhost:8025](http://localhost:8025)
-
----
-
-## Database
-
-```bash
-task migrate              # run pending migrations
-task migrate:fresh        # drop all, remigrate, seed (⚠️ destructive)
-```
+Mail is intercepted by Herd's Mailpit — view at [http://localhost:8025](http://localhost:8025).
 
 ---
 
 ## Testing
 
 ```bash
-task test                        # all backend tests (Pest 4, parallel)
-task test:unit                   # unit tests only
-task test:feature                # feature tests only
-task test:module NAME=YourModule # single module tests
+task test                          # all backend tests (Pest, parallel)
+task test:unit                     # unit only
+task test:feature                  # feature only
+task test:module NAME=YourModule   # single module
 
-task test:frontend        # Vitest (run once)
-task test:frontend:watch  # Vitest (watch mode)
-
-task test:all             # backend + frontend
+task test:frontend                 # Vitest (once)
+task test:frontend:watch           # Vitest (watch)
+task test:all                      # backend + frontend
 ```
 
 ---
 
 ## Scaffolding
 
-### Create a new module
-
 ```bash
-task module:make NAME=MyModule
+task module:make NAME=MyModule   # scaffold full module under backend/modules/MyModule/
 ```
 
-This scaffolds the full module structure under `backend/modules/MyModule/` and auto-registers the ServiceProvider in `bootstrap/providers.php`.
+See `backend/module-structure.yml` for the canonical module directory layout, and the skills in `.claude/` for step-by-step guides on creating actions, queries, controllers, and workflows.
+
+---
+
+## Key Commands
+
+```bash
+task migrate              # run pending migrations
+task migrate:fresh        # drop all + remigrate + seed (⚠️ destructive)
+task lint                 # PHPStan static analysis
+task type-check           # TypeScript type check
+task commit               # run all checks before committing
+```
+
+Full command reference in `Taskfile.yml`.
 
 ---
 
 ## Project Structure
 
 ```
-your-app/
-├── backend/                    # Laravel 13 application
+platform/
+├── .github/workflows/      # CI (ci.yml) and deploy (deploy.yml)
+├── backend/                # Laravel 13
 │   ├── app/
-│   │   ├── Workflows/          # Cross-module orchestration only
-│   │   └── Support/            # Shared base classes
-│   │       ├── Actions/        # Action base class
-│   │       ├── Queries/        # Query base class
-│   │       ├── DataTransferObjects/
-│   │       ├── Snapshots/
-│   │       └── ValueObjects/
-│   ├── modules/                # Feature modules (add yours here)
-│   └── routes/
-│       └── shared.php
-├── frontend/                   # Vue 3 + TypeScript
-│   ├── pages/                  # Inertia page components
-│   ├── domains/                # Reusable UI tied to backend concepts
-│   ├── components/             # Global primitives
-│   └── wayfinder/              # Generated route helpers (never edit manually)
-├── public/
-├── Taskfile.yml
-└── pnpm-workspace.yaml
+│   │   ├── Contracts/      # Shared interfaces (Action, Query, Snapshot, VO, etc.)
+│   │   ├── Data/           # Shared enums (HttpResponse)
+│   │   ├── Http/
+│   │   │   ├── Middleware/ # HandleInertiaRequests, SecurityHeaders
+│   │   │   └── Responses/  # AppResponseFactory, ApiResponse, InertiaResponse
+│   │   ├── Providers/      # AppServiceProvider, FeatureServiceProvider, etc.
+│   │   ├── Support/        # helpers.php (app_response()), base classes
+│   │   └── Workflows/      # Cross-module orchestration (empty until you add it)
+│   ├── modules/            # Your feature modules live here
+│   ├── config/
+│   ├── routes/
+│   └── tests/
+│       └── Architecture/   # Automated architecture enforcement tests
+├── frontend/               # Vue 3 + TypeScript
+│   ├── pages/              # Inertia page components
+│   ├── domains/            # Reusable UI tied to backend modules
+│   ├── components/         # Global primitives
+│   ├── composables/        # Cross-cutting Vue composables
+│   └── types/              # Wayfinder-generated route types (never edit)
+├── public/                 # Laravel public dir (monorepo root)
+├── .env.example
+└── Taskfile.yml
 ```
-
-See `backend/module-structure.yml` for the canonical module directory structure.

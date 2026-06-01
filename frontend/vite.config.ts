@@ -19,6 +19,17 @@ export default defineConfig({
   },
   build: {
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('@awesome.me/webawesome')) return 'webawesome'
+            if (id.includes('@inertiajs/vue3')) return 'inertia'
+            if (id.includes('/vue/') || id.includes('/vue-demi') || id.includes('@vue/')) return 'vue'
+          }
+        },
+      },
+    },
   },
   server: {
     watch: {

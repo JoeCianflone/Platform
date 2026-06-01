@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use Illuminate\Foundation\Application;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,6 +13,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->append(SecurityHeaders::class);
         $middleware->web(append: [
             HandleInertiaRequests::class,
         ]);
@@ -20,7 +22,8 @@ $app = Application::configure(basePath: dirname(__DIR__))
         //
     })->create();
 
-// public/ lives at the monorepo root, one level above backend/
+// public/ and .env live at the monorepo root, one level above backend/
 $app->usePublicPath(dirname(__DIR__, 2).'/public');
+$app->useEnvironmentPath(dirname(__DIR__, 2));
 
 return $app;

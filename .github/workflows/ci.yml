@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, intl
+          coverage: none
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        working-directory: backend
+        run: composer install --prefer-dist --no-interaction --no-progress --no-scripts
+
+      - name: Copy .env and generate app key
+        run: |
+          cp .env.example .env
+          cd backend && php artisan key:generate
+
+      - name: Check formatting (Pint)
+        working-directory: backend
+        run: vendor/bin/pint --test
+
+      - name: Static analysis (PHPStan)
+        working-directory: backend
+        run: vendor/bin/phpstan --memory-limit=2G --no-progress
+
+      - name: Run tests (Pest)
+        working-directory: backend
+        run: php artisan test --parallel --compact
+
+      - name: Security audit
+        working-directory: backend
+        run: composer audit
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Get pnpm store path
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('frontend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        working-directory: frontend
+        run: pnpm exec vue-tsc --noEmit
+
+      - name: Lint
+        working-directory: frontend
+        run: pnpm exec oxlint .
+
+      - name: Format check
+        working-directory: frontend
+        run: pnpm exec oxfmt --check .
+
+      - name: Tests (Vitest)
+        working-directory: frontend
+        run: pnpm exec vitest run
+
+      - name: Build
+        working-directory: frontend
+        env:
+          VITE_APP_NAME: ${{ github.event.repository.name }}
+        run: |
+          mkdir -p ../public
+          pnpm exec vite build
+
+      - name: Security audit
+        working-directory: frontend
+        run: pnpm audit --audit-level=high

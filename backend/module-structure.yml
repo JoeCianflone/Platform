@@ -16,16 +16,17 @@ module:
       Resolvers: {}
     Data:
       Collections: {}
-      DomainObjects: {}
+      DataObjects: {}
       Snapshots: {}
       ValueObjects: {}
     Domain:
       Actions: {}
       Events: {}
       Listeners: {}
-      Queries: {}
+      Queries:
+        Projections: {}
+        Scopes: hide
       Resolvers: {}
-      Scopes: hide
     Enums: {}
     Exceptions: hide
     Http:

@@ -8,7 +8,7 @@ $subNamespaces = [
     'Domain\\Scopes',
     'Domain\\Events',
     'Domain\\Listeners',
-    'Data\\DomainObjects',
+    'Data\\DataObjects',
     'Data\\Snapshots',
     'Data\\Collections',
     'Data\\ValueObjects',

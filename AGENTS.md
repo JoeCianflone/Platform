@@ -19,11 +19,11 @@ Quick reference for AI agents. See CLAUDE.md for full architecture documentation
 
 ## Namespaces
 
-| Location | Namespace |
-|----------|-----------|
-| `backend/app/Workflows/` | `App\Workflows` |
-| `backend/app/Support/` | `App\Support` |
-| `backend/modules/{Name}/src/` | `App\{Name}` |
+| Location                      | Namespace       |
+| ----------------------------- | --------------- |
+| `backend/app/Workflows/`      | `App\Workflows` |
+| `backend/app/Support/`        | `App\Support`   |
+| `backend/modules/{Name}/src/` | `App\{Name}`    |
 
 PSR-4: `App\{Name}\` → `modules/{Name}/src/`
 
@@ -31,22 +31,22 @@ PSR-4: `App\{Name}\` → `modules/{Name}/src/`
 
 ## Naming Conventions
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Action Contract | `{Action}Action` | `CreateItemAction` |
-| Action | `{Action}` | `CreateItem` |
-| Query Contract | `{Entity}QueryContract` | `ItemQueryContract` |
-| Query | `{Entity}Query` | `ItemQuery` |
-| Scope interface | `{Entity}Scope` | `ItemScope` |
-| Scope class | descriptive | `PublishedItems` |
-| Projection | `{Purpose}Projection` | `FeedProjection` |
-| Workflow | `{Process}Workflow` | `RegisterUserWorkflow` |
-| Controller | `{UseCase}Controller` | `LoginController` |
-| DataObject | `{Concept}DataObject` | `ItemDataObject` |
-| Snapshot | `{Concept}Snapshot` | `ItemSnapshot` |
-| Collection | `{Concept}Collection` | `ItemCollection` |
-| ValueObject | domain concept | `EmailAddress` |
-| Event | past tense | `ItemCreated` |
+| Type            | Pattern                 | Example                |
+| --------------- | ----------------------- | ---------------------- |
+| Action Contract | `{Action}Action`        | `CreateItemAction`     |
+| Action          | `{Action}`              | `CreateItem`           |
+| Query Contract  | `{Entity}QueryContract` | `ItemQueryContract`    |
+| Query           | `{Entity}Query`         | `ItemQuery`            |
+| Scope interface | `{Entity}Scope`         | `ItemScope`            |
+| Scope class     | descriptive             | `PublishedItems`       |
+| Projection      | `{Purpose}Projection`   | `FeedProjection`       |
+| Workflow        | `{Process}Workflow`     | `RegisterUserWorkflow` |
+| Controller      | `{UseCase}Controller`   | `LoginController`      |
+| DataObject      | `{Concept}DataObject`   | `ItemDataObject`       |
+| Snapshot        | `{Concept}Snapshot`     | `ItemSnapshot`         |
+| Collection      | `{Concept}Collection`   | `ItemCollection`       |
+| ValueObject     | domain concept          | `EmailAddress`         |
+| Event           | past tense              | `ItemCreated`          |
 
 ---
 
@@ -108,7 +108,7 @@ php artisan make:module {Name} --no-interaction       # scaffold module
 
 # All make:* commands accept --module=Name to route into the module
 php artisan make:controller ViewItemController --module=YourModule --no-interaction
-php artisan make:dataobject Item --module=YourModule --no-interaction        # → Data/DomainObjects/ItemDataObject.php
+php artisan make:dataobject Item --module=YourModule --no-interaction        # → Data/DataObjects/ItemDataObject.php
 php artisan make:valueobject ItemCode --module=YourModule --no-interaction   # → Data/ValueObjects/ItemCode.php
 php artisan make:scope PublishedItems --module=YourModule --no-interaction   # → Domain/Scopes/PublishedItems.php
 php artisan make:event ItemCreated --module=YourModule --no-interaction      # → Domain/Events/ItemCreated.php

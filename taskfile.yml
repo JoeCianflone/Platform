@@ -36,7 +36,6 @@ tasks:
 
   setup:herd:
     desc: Link and secure site in Laravel Herd
-    dir: "{{.BACKEND}}"
     cmds:
       - herd link your-app
       - herd secure your-app
