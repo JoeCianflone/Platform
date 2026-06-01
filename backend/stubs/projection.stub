@@ -1,0 +1,18 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+
+final class {{ class }}
+{
+    /**
+     * @param  Builder<Model>  $query
+     * @return Builder<Model>
+     */
+    public function apply(Builder $query): Builder
+    {
+        return $query->select([]);
+    }
+}

@@ -1,0 +1,12 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use App\Contracts\Snapshot as SnapshotContract;
+use App\Support\Snapshots\Snapshot;
+
+final readonly class {{ class }} extends Snapshot implements SnapshotContract
+{
+    public function __construct(
+    ) {}
+}

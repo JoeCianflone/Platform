@@ -1,0 +1,13 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use App\Support\Queries\Query;
+use {{ contractNamespace }}\{{ contractClass }};
+
+final class {{ class }} extends Query implements {{ contractClass }}
+{
+    public function handle(): mixed
+    {
+    }
+}

@@ -154,6 +154,41 @@ tasks:
     dir: "{{.BACKEND}}"
     cmd: php artisan make:module {{.NAME}}
 
+  action:make:
+    desc: Create Action contract + concrete (task action:make NAME=CreateItem MODULE=YourModule)
+    dir: "{{.BACKEND}}"
+    cmd: php artisan make:action {{.NAME}} --module={{.MODULE}}
+
+  query:make:
+    desc: Create Query contract + concrete + Projection (task query:make NAME=Item MODULE=YourModule)
+    dir: "{{.BACKEND}}"
+    cmd: php artisan make:query {{.NAME}} --module={{.MODULE}}
+
+  snapshot:make:
+    desc: Create a Snapshot class (task snapshot:make NAME=Item MODULE=YourModule)
+    dir: "{{.BACKEND}}"
+    cmd: php artisan make:snapshot {{.NAME}} --module={{.MODULE}}
+
+  workflow:make:
+    desc: Create a Workflow class in App\Workflows (task workflow:make NAME=RegisterUser)
+    dir: "{{.BACKEND}}"
+    cmd: php artisan make:workflow {{.NAME}}
+
+  vue:make:
+    desc: Generate a Vue SFC (task vue:make PATH=domains/users/Avatar)
+    dir: "{{.BACKEND}}"
+    cmd: php artisan make:vue-file {{.PATH}}
+
+  composable:make:
+    desc: Generate a Vue composable (task composable:make NAME=Auth)
+    dir: "{{.BACKEND}}"
+    cmd: php artisan make:composable {{.NAME}}
+
+  vitest:make:
+    desc: Generate a Vitest test file (task vitest:make PATH=domains/users/Avatar)
+    dir: "{{.BACKEND}}"
+    cmd: php artisan make:vitest {{.PATH}}
+
   # -----------------------------------------------------------------------
   # Passthroughs
   # -----------------------------------------------------------------------
