@@ -1,49 +1,5 @@
-module:
-  database:
-    factories: {}
-    migrations: {}
-    seeders: {}
-  src:
-    module.routes.php: file
-    module.config.php: file
-    ModuleServiceProvider.php: file
-    Concerns: {}
-    Console:
-      Commands: hide
-    Contracts:
-      Actions: {}
-      Queries: {}
-      Resolvers: {}
-    Data:
-      Collections: {}
-      DataObjects: {}
-      Snapshots: {}
-      ValueObjects: {}
-    Domain:
-      Actions: {}
-      Events: {}
-      Listeners: {}
-      Queries:
-        Projections: {}
-        Scopes: hide
-      Resolvers: {}
-    Enums: {}
-    Exceptions: hide
-    Http:
-      Controllers: {}
-      Middleware: hide
-      Requests: {}
-    Eloquent:
-      Casts: hide
-      Models: {}
-      Observers: hide
-    Jobs: {}
-    Mail: {}
-    Notifications: hide
-    Policies: hide
-    Rules: hide
-  resources:
-    lang: hide
-  tests:
-    Unit: {}
-    Feature: {}
+frontend:
+  components: {}
+  composables: {}
+  domains: {}
+  pages: {}
