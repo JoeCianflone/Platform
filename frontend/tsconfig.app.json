@@ -25,6 +25,7 @@
         "domains/**/*.vue",
         "pages/**/*.ts",
         "pages/**/*.vue",
-        "types/**/*.ts"
+        "types/**/*.ts",
+        "ds/**/*.ts"
     ]
 }

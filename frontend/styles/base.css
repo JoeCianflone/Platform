@@ -1,0 +1,17 @@
+/**
+ * App-level base styles.
+ * WA native.css handles box-sizing and margin/padding resets.
+ * This file adds only what's specific to this app.
+ */
+
+html,
+body {
+  min-height: 100vh;
+  font-size: var(--ds-font-size-md);
+  color: var(--ds-color-text);
+  background-color: var(--ds-color-surface);
+}
+
+#app {
+  min-height: 100vh;
+}

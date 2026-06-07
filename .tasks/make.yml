@@ -1,0 +1,164 @@
+# https://taskfile.dev
+version: "3"
+
+tasks:
+  list:
+    internal: true
+    silent: true
+    cmd: task --list-all 2>&1 | grep "make:"
+
+  # -----------------------------------------------------------------------
+  # Architecture (custom)
+  # -----------------------------------------------------------------------
+
+  module:
+    desc: Scaffold a new module (NAME=Foo)
+    cmd: php artisan make:module {{.NAME}} --no-interaction
+
+  action:
+    desc: Action contract + concrete (NAME=CreateItem MODULE=YourModule)
+    cmd: php artisan make:action {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  query:
+    desc: Query contract + concrete + Projection (NAME=Item MODULE=YourModule)
+    cmd: php artisan make:query {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  snapshot:
+    desc: Snapshot class (NAME=Item MODULE=YourModule)
+    cmd: php artisan make:snapshot {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  workflow:
+    desc: Workflow in App\Workflows (NAME=RegisterUser)
+    cmd: php artisan make:workflow {{.NAME}} --no-interaction
+
+  dataobject:
+    desc: DataObject DTO (NAME=Item MODULE=YourModule)
+    cmd: php artisan make:dataobject {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  valueobject:
+    desc: ValueObject (NAME=EmailAddress MODULE=YourModule)
+    cmd: php artisan make:valueobject {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  scope:
+    desc: Eloquent Scope (NAME=PublishedItems MODULE=YourModule)
+    cmd: php artisan make:scope {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  # -----------------------------------------------------------------------
+  # HTTP
+  # -----------------------------------------------------------------------
+
+  controller:
+    desc: Invokable controller (NAME=ViewItemController MODULE=YourModule)
+    cmd: php artisan make:controller {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  request:
+    desc: Form request (NAME=CreateItemRequest MODULE=YourModule)
+    cmd: php artisan make:request {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  middleware:
+    desc: Middleware (NAME=RequiresPremium MODULE=YourModule)
+    cmd: php artisan make:middleware {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  policy:
+    desc: Policy (NAME=ItemPolicy MODULE=YourModule)
+    cmd: php artisan make:policy {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  # -----------------------------------------------------------------------
+  # Eloquent
+  # -----------------------------------------------------------------------
+
+  model:
+    desc: Eloquent model (NAME=Item MODULE=YourModule)
+    cmd: php artisan make:model {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  migration:
+    desc: Migration (NAME=create_items_table MODULE=YourModule)
+    cmd: php artisan make:migration {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  factory:
+    desc: Model factory (NAME=Item MODULE=YourModule)
+    cmd: php artisan make:factory {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  seeder:
+    desc: Database seeder (NAME=ItemSeeder MODULE=YourModule)
+    cmd: php artisan make:seeder {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  observer:
+    desc: Model observer (NAME=ItemObserver MODULE=YourModule)
+    cmd: php artisan make:observer {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  cast:
+    desc: Eloquent cast (NAME=MoneyCast MODULE=YourModule)
+    cmd: php artisan make:cast {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  # -----------------------------------------------------------------------
+  # Events & Jobs
+  # -----------------------------------------------------------------------
+
+  event:
+    desc: Event class (NAME=ItemCreated MODULE=YourModule)
+    cmd: php artisan make:event {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  listener:
+    desc: Event listener (NAME=SendItemNotification MODULE=YourModule)
+    cmd: php artisan make:listener {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  job:
+    desc: Queued job (NAME=ProcessItemScore MODULE=YourModule)
+    cmd: php artisan make:job {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  # -----------------------------------------------------------------------
+  # Notifications & Mail
+  # -----------------------------------------------------------------------
+
+  notification:
+    desc: Notification class (NAME=ItemApproved MODULE=YourModule)
+    cmd: php artisan make:notification {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  mail:
+    desc: Mailable class (NAME=WelcomeEmail MODULE=YourModule)
+    cmd: php artisan make:mail {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  # -----------------------------------------------------------------------
+  # Misc
+  # -----------------------------------------------------------------------
+
+  enum:
+    desc: Enum (NAME=AccountStatus MODULE=YourModule)
+    cmd: php artisan make:enum {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  exception:
+    desc: Exception class (NAME=InvalidItemException MODULE=YourModule)
+    cmd: php artisan make:exception {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  rule:
+    desc: Validation rule (NAME=ValidSlug MODULE=YourModule)
+    cmd: php artisan make:rule {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  trait:
+    desc: PHP trait (NAME=HasTimestamps MODULE=YourModule)
+    cmd: php artisan make:trait {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  command:
+    desc: Artisan command (NAME=SendDigestEmail)
+    cmd: php artisan make:command {{.NAME}} --no-interaction
+
+  test:
+    desc: Pest test (NAME=ItemCreationTest MODULE=YourModule)
+    cmd: php artisan make:test --pest {{.NAME}} {{if .MODULE}}--module={{.MODULE}}{{end}} --no-interaction
+
+  # -----------------------------------------------------------------------
+  # Frontend
+  # -----------------------------------------------------------------------
+
+  vue:
+    desc: Vue SFC (PATH=domains/users/Avatar)
+    cmd: php artisan make:vue-file {{.PATH}} --no-interaction
+
+  composable:
+    desc: Vue composable (NAME=Auth)
+    cmd: php artisan make:composable {{.NAME}} --no-interaction
+
+  vitest:
+    desc: Vitest test file (PATH=domains/users/Avatar)
+    cmd: php artisan make:vitest {{.PATH}} --no-interaction

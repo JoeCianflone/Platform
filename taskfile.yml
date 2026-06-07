@@ -2,37 +2,31 @@
 
 version: "3"
 output: group
+color: true
 
-vars:
-  BACKEND: ./backend
-  FRONTEND: ./frontend
-  FRONTEND_ROUTER: ../frontend/types
+includes:
+  frontend:
+    taskfile: .tasks/frontend.yml
+    dir: ./frontend
+  backend:
+    taskfile: .tasks/backend.yml
+    dir: ./backend
+  make:
+    taskfile: .tasks/make.yml
+    dir: ./backend
 
 tasks:
+  default:
+    silent: true
+    cmd: task --list-all
+
   # -----------------------------------------------------------------------
   # Setup
   # -----------------------------------------------------------------------
 
   setup:
     desc: Full project setup (backend + frontend + Herd)
-    deps: [setup:backend, setup:frontend, setup:herd]
-
-  setup:backend:
-    desc: Install PHP deps, configure env, migrate, and seed
-    dir: "{{.BACKEND}}"
-    cmds:
-      - composer install
-      - cp .env.example .env
-      - php artisan key:generate
-      - php artisan migrate --seed
-      - php artisan storage:link
-
-  setup:frontend:
-    desc: Install JS deps and build
-    dir: "{{.FRONTEND}}"
-    cmds:
-      - pnpm install
-      - pnpm build
+    deps: [backend:setup, frontend:setup, setup:herd]
 
   setup:herd:
     desc: Link and secure site in Laravel Herd
@@ -46,22 +40,7 @@ tasks:
 
   dev:
     desc: Start Vite dev server
-    deps: [dev:frontend]
-
-  dev:frontend:
-    desc: Vite dev server
-    dir: "{{.FRONTEND}}"
-    cmd: pnpm dev
-
-  dev:queue:
-    desc: Laravel Horizon queue worker
-    dir: "{{.BACKEND}}"
-    cmd: php artisan horizon
-
-  dev:reverb:
-    desc: Laravel Reverb WebSocket server
-    dir: "{{.BACKEND}}"
-    cmd: php artisan reverb:start
+    deps: [frontend:dev]
 
   dev:stripe:
     desc: Forward Stripe webhooks to local
@@ -74,65 +53,12 @@ tasks:
   build:
     desc: Generate routes then build frontend
     cmds:
-      - task: build:routes
+      - task: backend:build:routes
       - task: frontend:build
-
-  build:routes:
-    desc: Generate type-safe Wayfinder routes
-    dir: "{{.BACKEND}}"
-    cmd: php artisan wayfinder:generate --path={{.FRONTEND_ROUTER}}
-
-  # -----------------------------------------------------------------------
-  # Database
-  # -----------------------------------------------------------------------
-
-  migrate:
-    desc: Run pending migrations
-    dir: "{{.BACKEND}}"
-    cmd: php artisan migrate
-
-  migrate:fresh:
-    desc: Drop all tables, remigrate, and reseed (destructive)
-    dir: "{{.BACKEND}}"
-    cmd: php artisan migrate:fresh --seed
-
-  # -----------------------------------------------------------------------
-  # Testing
-  # -----------------------------------------------------------------------
 
   test:
     desc: Run all tests — backend (Pest) + frontend (Vitest) in parallel
     deps: [backend:test, frontend:test]
-
-  test:unit:
-    desc: Backend unit tests only
-    cmds:
-      - task: backend:test:unit
-
-  test:feature:
-    desc: Backend feature tests only
-    cmds:
-      - task: backend:test:feature
-
-  test:module:
-    desc: Run tests for a single module (task test:module NAME=YourModule)
-    cmds:
-      - task: backend:test:module
-        vars: { NAME: "{{.NAME}}" }
-
-  # -----------------------------------------------------------------------
-  # Code quality
-  # -----------------------------------------------------------------------
-
-  lint:
-    desc: Run PHPStan static analysis
-    cmds:
-      - task: backend:lint
-
-  type-check:
-    desc: TypeScript type-check the frontend
-    cmds:
-      - task: frontend:type-check
 
   commit:
     desc: Run all checks before committing — stops on first failure
@@ -144,172 +70,3 @@ tasks:
       - task: frontend:format:check
       - task: frontend:lint
       - task: frontend:build
-
-  # -----------------------------------------------------------------------
-  # Scaffolding
-  # -----------------------------------------------------------------------
-
-  module:make:
-    desc: Scaffold a new module (task module:make NAME=Foo)
-    dir: "{{.BACKEND}}"
-    cmd: php artisan make:module {{.NAME}}
-
-  action:make:
-    desc: Create Action contract + concrete (task action:make NAME=CreateItem MODULE=YourModule)
-    dir: "{{.BACKEND}}"
-    cmd: php artisan make:action {{.NAME}} --module={{.MODULE}}
-
-  query:make:
-    desc: Create Query contract + concrete + Projection (task query:make NAME=Item MODULE=YourModule)
-    dir: "{{.BACKEND}}"
-    cmd: php artisan make:query {{.NAME}} --module={{.MODULE}}
-
-  snapshot:make:
-    desc: Create a Snapshot class (task snapshot:make NAME=Item MODULE=YourModule)
-    dir: "{{.BACKEND}}"
-    cmd: php artisan make:snapshot {{.NAME}} --module={{.MODULE}}
-
-  workflow:make:
-    desc: Create a Workflow class in App\Workflows (task workflow:make NAME=RegisterUser)
-    dir: "{{.BACKEND}}"
-    cmd: php artisan make:workflow {{.NAME}}
-
-  vue:make:
-    desc: Generate a Vue SFC (task vue:make PATH=domains/users/Avatar)
-    dir: "{{.BACKEND}}"
-    cmd: php artisan make:vue-file {{.PATH}}
-
-  composable:make:
-    desc: Generate a Vue composable (task composable:make NAME=Auth)
-    dir: "{{.BACKEND}}"
-    cmd: php artisan make:composable {{.NAME}}
-
-  vitest:make:
-    desc: Generate a Vitest test file (task vitest:make PATH=domains/users/Avatar)
-    dir: "{{.BACKEND}}"
-    cmd: php artisan make:vitest {{.PATH}}
-
-  # -----------------------------------------------------------------------
-  # Passthroughs
-  # -----------------------------------------------------------------------
-
-  artisan:
-    desc: Run artisan commands (task artisan -- migrate:fresh)
-    dir: "{{.BACKEND}}"
-    cmd: php artisan {{.CLI_ARGS}}
-
-  pn:
-    dir: "{{.FRONTEND}}"
-    cmd: pnpm {{.CLI_ARGS}}
-
-  composer:
-    dir: "{{.BACKEND}}"
-    cmd: composer {{.CLI_ARGS}}
-
-  add:backend:
-    desc: composer require (task add -- vendor/package)
-    dir: "{{.BACKEND}}"
-    cmd: composer require {{.CLI_ARGS}}
-
-  remove:backend:
-    desc: composer remove (task remove -- vendor/package)
-    dir: "{{.BACKEND}}"
-    cmd: composer remove {{.CLI_ARGS}}
-
-  add:frontend:
-    dir: "{{.FRONTEND}}"
-    cmd: pnpm add -- {{.CLI_ARGS}}
-
-  remove:frontend:
-    dir: "{{.FRONTEND}}"
-    cmd: pnpm remove -- {{.CLI_ARGS}}
-
-  # -----------------------------------------------------------------------
-  # Backend
-  # -----------------------------------------------------------------------
-
-  backend:test:
-    desc: Run all backend tests (parallel + compact)
-    dir: "{{.BACKEND}}"
-    cmd: php artisan test --parallel --compact
-
-  backend:test:unit:
-    desc: Backend unit tests
-    dir: "{{.BACKEND}}"
-    cmd: php artisan test --testsuite=Unit --compact
-
-  backend:test:feature:
-    desc: Backend feature tests
-    dir: "{{.BACKEND}}"
-    cmd: php artisan test --testsuite=Feature --compact
-
-  backend:test:module:
-    desc: Tests for one module (task backend:test:module NAME=YourModule)
-    dir: "{{.BACKEND}}"
-    cmd: php artisan test --filter={{.NAME}} --compact
-
-  backend:lint:
-    desc: PHPStan static analysis
-    dir: "{{.BACKEND}}"
-    cmd: vendor/bin/phpstan --memory-limit=2G
-
-  backend:format:
-    desc: Pint — format changed PHP files
-    dir: "{{.BACKEND}}"
-    cmd: vendor/bin/pint --dirty --format agent
-
-  backend:format:all:
-    desc: Pint — format all PHP files
-    dir: "{{.BACKEND}}"
-    cmd: vendor/bin/pint --format agent
-
-  backend:update:
-    desc: Update all Composer dependencies
-    dir: "{{.BACKEND}}"
-    cmd: composer update
-
-  # -----------------------------------------------------------------------
-  # Frontend
-  # -----------------------------------------------------------------------
-
-  frontend:test:
-    desc: Run Vitest once
-    dir: "{{.FRONTEND}}"
-    cmd: pnpm exec vitest run
-
-  frontend:test:watch:
-    desc: Run Vitest in watch mode
-    dir: "{{.FRONTEND}}"
-    cmd: pnpm exec vitest
-
-  frontend:format:
-    desc: Format frontend with oxfmt (write in place)
-    dir: "{{.FRONTEND}}"
-    cmd: pnpm exec oxfmt --write .
-
-  frontend:format:check:
-    desc: Check frontend formatting without writing (CI)
-    dir: "{{.FRONTEND}}"
-    cmd: pnpm exec oxfmt --check .
-
-  frontend:lint:
-    desc: Lint frontend with oxlint
-    dir: "{{.FRONTEND}}"
-    cmd: pnpm exec oxlint .
-
-  frontend:type-check:
-    desc: TypeScript type-check (vue-tsc)
-    dir: "{{.FRONTEND}}"
-    cmd: pnpm exec vue-tsc --noEmit
-
-  frontend:build:
-    desc: Production build (includes type-check via vue-tsc)
-    dir: "{{.FRONTEND}}"
-    cmds:
-      - pnpm vue-tsc -b
-      - pnpm vite build
-
-  frontend:update:
-    desc: Update all pnpm dependencies
-    dir: "{{.FRONTEND}}"
-    cmd: pnpm update

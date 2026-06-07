@@ -1,0 +1,85 @@
+# https://taskfile.dev
+version: "3"
+
+tasks:
+  list:
+    internal: true
+    silent: true
+    cmd: task --list-all 2>&1 | grep "backend:"
+
+  setup:
+    desc: Install PHP deps, configure env, migrate, and seed
+    cmds:
+      - composer install
+      - cp .env.example .env
+      - php artisan key:generate
+      - php artisan migrate --seed
+      - php artisan storage:link
+
+  dev:queue:
+    desc: Laravel Horizon queue worker
+    cmd: php artisan horizon
+
+  dev:reverb:
+    desc: Laravel Reverb WebSocket server
+    cmd: php artisan reverb:start
+
+  build:routes:
+    desc: Generate type-safe Wayfinder routes
+    cmd: php artisan wayfinder:generate --path=../frontend/types
+
+  migrate:
+    desc: Run pending migrations
+    cmd: php artisan migrate
+
+  migrate:fresh:
+    desc: Drop all tables, remigrate, and reseed (destructive)
+    cmd: php artisan migrate:fresh --seed
+
+  test:
+    desc: Run all backend tests (parallel + compact)
+    cmd: php artisan test --parallel --compact
+
+  test:unit:
+    desc: Unit tests only
+    cmd: php artisan test --testsuite=Unit --compact
+
+  test:feature:
+    desc: Feature tests only
+    cmd: php artisan test --testsuite=Feature --compact
+
+  test:module:
+    desc: Tests for one module (NAME=YourModule)
+    cmd: php artisan test --filter={{.NAME}} --compact
+
+  lint:
+    desc: PHPStan static analysis
+    cmd: vendor/bin/phpstan --memory-limit=2G
+
+  format:
+    desc: Pint — format changed PHP files
+    cmd: vendor/bin/pint --dirty --format agent
+
+  format:all:
+    desc: Pint — format all PHP files
+    cmd: vendor/bin/pint --format agent
+
+  update:
+    desc: Update all Composer dependencies
+    cmd: composer update
+
+  artisan:
+    desc: Run artisan commands (task backend:artisan -- migrate:fresh)
+    cmd: php artisan {{.CLI_ARGS}}
+
+  composer:
+    desc: Run composer commands (task backend:composer -- require vendor/pkg)
+    cmd: composer {{.CLI_ARGS}}
+
+  add:
+    desc: composer require (task backend:add -- vendor/package)
+    cmd: composer require {{.CLI_ARGS}}
+
+  remove:
+    desc: composer remove (task backend:remove -- vendor/package)
+    cmd: composer remove {{.CLI_ARGS}}

@@ -22,6 +22,10 @@
                     {
                         "group": ["../*", "./**/.."],
                         "message": "Use the @ alias instead of relative paths (e.g. @/components/Foo.vue not ../components/Foo.vue)"
+                    },
+                    {
+                        "group": ["@awesome.me/webawesome", "@awesome.me/webawesome/**"],
+                        "message": "WA imports only allowed in components/adapters/. Use @/components for App* components instead."
                     }
                 ]
             }
@@ -36,6 +40,16 @@
             ],
             "env": {
                 "vitest/globals": true
+            }
+        },
+        {
+            "files": [
+                "components/primitives/**/*.{ts,vue}",
+                "components/forms/**/*.{ts,vue}",
+                "components/tables/**/*.{ts,vue}"
+            ],
+            "rules": {
+                "no-restricted-imports": "off"
             }
         }
     ]
