@@ -1,0 +1,55 @@
+name: "Trigger Deploy, Send Email"
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.target_commitish }}
+
+      - name: Update Changelog
+        uses: stefanzweifel/changelog-updater-action@v1
+        with:
+          latest-version: ${{ github.event.release.tag_name }}
+          release-notes: ${{ github.event.release.body }}
+
+      - name: Commit updated CHANGELOG
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          branch: main
+          commit_message: "update CHANGELOG"
+          file_pattern: CHANGELOG.md
+
+      - name: Laravel Forge Deploy -- Community
+        uses: jbrooksuk/laravel-forge-action@v1.0.2
+        with:
+          trigger_url: ${{ secrets.TRIGGER_URL }}
+
+      - name: Laravel Forge Deploy -- Chapter
+        uses: jbrooksuk/laravel-forge-action@v1.0.2
+        with:
+          trigger_url: ${{ secrets.TRIGGER_URL_CHAPER }}
+
+      - name: Send mail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{secrets.MAIL_USERNAME}}
+          password: ${{secrets.MAIL_PASSWORD}}
+          subject: New MCS Code Released! Version ${{ github.event.release.tag_name }}
+          to: joe@partnerwithshyft.com, brett@partnerwithshyft.com, andrea@partnerwithshyft.com
+          from: ${{secrets.MAIL_USERNAME}}
+          secure: true
+          html_body: ${{ github.event.release.body }}
+          convert_markdown: true
