@@ -1,9 +1,10 @@
-*, *::before, *::after {
-  box-sizing: border-box;
-}
+/* WA resets and component normalization */
+@import '@awesome.me/webawesome/dist/styles/native.css';
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
+/* WA awesome theme (defines --wa-* tokens for light + dark) */
+@import '@awesome.me/webawesome/dist/styles/themes/awesome.css';
+
+/* Design system layers */
+@import './styles/tokens.css';
+@import './styles/motion.css';
+@import './styles/base.css';

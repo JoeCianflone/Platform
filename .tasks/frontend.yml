@@ -1,0 +1,64 @@
+# https://taskfile.dev
+version: "3"
+
+tasks:
+  list:
+    internal: true
+    silent: true
+    cmd: task --list-all 2>&1 | grep "frontend:"
+
+  setup:
+    desc: Install JS deps and build
+    cmds:
+      - pnpm install
+      - task: frontend:build
+
+  dev:
+    desc: Vite dev server
+    cmd: pnpm exec vite
+
+  build:
+    desc: Production build (type-check then bundle)
+    cmds:
+      - pnpm exec vue-tsc -b
+      - pnpm exec vite build
+
+  test:
+    desc: Run Vitest once
+    cmd: pnpm exec vitest run
+
+  test:watch:
+    desc: Run Vitest in watch mode
+    cmd: pnpm exec vitest
+
+  lint:
+    desc: Lint with oxlint
+    cmd: pnpm exec oxlint .
+
+  format:
+    desc: Format with oxfmt (write in place)
+    cmd: pnpm exec oxfmt --write .
+
+  format:check:
+    desc: Check formatting without writing (CI)
+    cmd: pnpm exec oxfmt --check .
+
+  type-check:
+    desc: TypeScript type-check (vue-tsc)
+    cmd: pnpm exec vue-tsc --noEmit
+
+  update:
+    desc: Update all pnpm dependencies
+    cmd: pnpm update
+
+  pn:
+    desc: Run pnpm commands (task frontend:pn -- add lodash)
+    cmd: pnpm {{.CLI_ARGS}}
+
+  add:
+    desc: pnpm add (task frontend:add -- lodash)
+    cmd: pnpm add -- {{.CLI_ARGS}}
+
+  remove:
+    desc: pnpm remove (task frontend:remove -- lodash)
+    cmd: pnpm remove -- {{.CLI_ARGS}}
