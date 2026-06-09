@@ -819,7 +819,7 @@ cd backend && vendor/bin/pint --dirty --format agent
 frontend/
 ├── app.ts
 ├── app.css
-├── components/           # Global primitives (AppLayout, PremiumGate, …)
+├── components/           # Global primitives (AppPremiumGate, AppToast, …)
 ├── composables/          # Cross-cutting composables (useAuth, …)
 ├── domains/              # Reusable UI tied to backend concepts
 │   ├── {YourModule}/     #   module-specific widgets and cards
@@ -897,12 +897,12 @@ router.post('/items/create/' + item.slug, data)
 
 ### Premium Gating on the Frontend
 
-Always use the `PremiumGate` component to wrap premium features — never scatter raw boolean checks through templates.
+Always use the `AppPremiumGate` component to wrap premium features — never scatter raw boolean checks through templates.
 
 ```vue
-<PremiumGate>
+<AppPremiumGate>
   <PremiumFeatureComponent v-model="value" />
-</PremiumGate>
+</AppPremiumGate>
 ```
 
 Premium status comes from `page.props.auth.user.is_premium` — set server-side in `HandleInertiaRequests::share()` on every request.

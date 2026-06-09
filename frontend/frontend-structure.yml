@@ -1,5 +1,14 @@
 frontend:
-  components: {}
-  composables: {}
-  domains: {}
-  pages: {}
+  ds:
+    components: {}
+    composables: {}
+    styles: {}
+    types: {}
+  src:
+    components: {}
+    composables: {}
+    domains: {}
+    pages: {}
+    styles: {}
+    types:
+      wayfinder: {}

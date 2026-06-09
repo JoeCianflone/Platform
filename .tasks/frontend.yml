@@ -15,25 +15,27 @@ tasks:
 
   dev:
     desc: Vite dev server
-    cmd: pnpm exec vite
+    cmd: pnpm --filter @platform/app exec vite
 
   build:
     desc: Production build (type-check then bundle)
     cmds:
-      - pnpm exec vue-tsc -b
-      - pnpm exec vite build
+      - pnpm --filter @platform/app exec vue-tsc -b
+      - pnpm --filter @platform/app exec vite build
 
   test:
     desc: Run Vitest once
-    cmd: pnpm exec vitest run
+    cmd: pnpm --filter @platform/app exec vitest run
 
   test:watch:
     desc: Run Vitest in watch mode
-    cmd: pnpm exec vitest
+    cmd: pnpm --filter @platform/app exec vitest
 
   lint:
-    desc: Lint with oxlint
-    cmd: pnpm exec oxlint .
+    desc: Lint all packages with oxlint
+    cmds:
+      - pnpm --filter @platform/ds exec oxlint .
+      - pnpm --filter @platform/app exec oxlint .
 
   format:
     desc: Format with oxfmt (write in place)
@@ -44,21 +46,25 @@ tasks:
     cmd: pnpm exec oxfmt --check .
 
   type-check:
-    desc: TypeScript type-check (vue-tsc)
-    cmd: pnpm exec vue-tsc --noEmit
+    desc: TypeScript type-check (vue-tsc, both packages)
+    cmd: pnpm --filter @platform/app exec vue-tsc --noEmit
 
   update:
     desc: Update all pnpm dependencies
-    cmd: pnpm update
+    cmd: pnpm update --recursive
 
   pn:
     desc: Run pnpm commands (task frontend:pn -- add lodash)
     cmd: pnpm {{.CLI_ARGS}}
 
   add:
-    desc: pnpm add (task frontend:add -- lodash)
-    cmd: pnpm add -- {{.CLI_ARGS}}
+    desc: pnpm add to app package (task frontend:add -- lodash)
+    cmd: pnpm --filter @platform/app add -- {{.CLI_ARGS}}
+
+  ds:add:
+    desc: pnpm add to ds package (task frontend:ds:add -- some-lib)
+    cmd: pnpm --filter @platform/ds add -- {{.CLI_ARGS}}
 
   remove:
-    desc: pnpm remove (task frontend:remove -- lodash)
-    cmd: pnpm remove -- {{.CLI_ARGS}}
+    desc: pnpm remove from app package (task frontend:remove -- lodash)
+    cmd: pnpm --filter @platform/app remove -- {{.CLI_ARGS}}

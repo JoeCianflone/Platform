@@ -1,0 +1,42 @@
+{
+    "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+    "plugins": ["vue", "typescript"],
+    "env": {
+        "browser": true,
+        "es2022": true
+    },
+    "ignorePatterns": ["dist/**", "dist-ssr/**", "coverage/**", "node_modules/**", "types/wayfinder/**"],
+    "rules": {
+        "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+        "typescript/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+        "no-restricted-imports": [
+            "error",
+            {
+                "patterns": [
+                    {
+                        "group": ["../*", "./**/.."],
+                        "message": "Use the @ or @ds alias instead of relative paths"
+                    },
+                    {
+                        "group": ["@awesome.me/webawesome", "@awesome.me/webawesome/**"],
+                        "message": "WA imports not allowed in src/. Use @ds components instead."
+                    }
+                ]
+            }
+        ]
+    },
+    "overrides": [
+        {
+            "files": ["**/__tests__/**/*.{ts,vue}", "**/*.test.{ts,vue}", "**/*.spec.{ts,vue}"],
+            "env": {
+                "vitest/globals": true
+            }
+        },
+        {
+            "files": ["components/AppToast.vue"],
+            "rules": {
+                "no-restricted-imports": "off"
+            }
+        }
+    ]
+}

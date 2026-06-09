@@ -1,0 +1,25 @@
+{
+    "extends": "@vue/tsconfig/tsconfig.dom.json",
+    "compilerOptions": {
+        "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+        "types": ["vite/client"],
+        "baseUrl": ".",
+        "paths": {
+            "@ds/*": ["./*"]
+        },
+        "ignoreDeprecations": "6.0",
+
+        /* Linting */
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "erasableSyntaxOnly": true,
+        "noFallthroughCasesInSwitch": true
+    },
+    "include": [
+        "index.ts",
+        "components/**/*.ts",
+        "components/**/*.vue",
+        "composables/**/*.ts",
+        "types/**/*.ts"
+    ]
+}
