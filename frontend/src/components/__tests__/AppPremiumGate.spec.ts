@@ -1,17 +1,18 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { usePage } from '@inertiajs/vue3'
 import AppPremiumGate from '@/components/AppPremiumGate.vue'
 
 vi.mock('@inertiajs/vue3', () => ({
   usePage: vi.fn(),
 }))
 
-import { usePage } from '@inertiajs/vue3'
+type MockPage = ReturnType<typeof usePage>
 
 function mockPage(isPremium: boolean) {
   vi.mocked(usePage).mockReturnValue({
     props: { auth: { user: { is_premium: isPremium } } },
-  } as ReturnType<typeof usePage>)
+  } as unknown as MockPage)
 }
 
 describe('AppPremiumGate', () => {
@@ -28,9 +29,7 @@ describe('AppPremiumGate', () => {
   })
 
   it('hides slot content when user is null', () => {
-    vi.mocked(usePage).mockReturnValue({
-      props: { auth: { user: null } },
-    } as ReturnType<typeof usePage>)
+    vi.mocked(usePage).mockReturnValue({ props: { auth: { user: null } } } as unknown as MockPage)
     const wrapper = mount(AppPremiumGate, { slots: { default: '<span>premium</span>' } })
     expect(wrapper.text()).not.toContain('premium')
   })
