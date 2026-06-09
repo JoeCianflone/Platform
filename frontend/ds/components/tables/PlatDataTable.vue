@@ -116,7 +116,9 @@ defineExpose({ sortKey, sortDirection })
         >
           ‹
         </button>
-        <span class="ds-table-pagination__pages">{{ meta.current_page }} / {{ meta.last_page }}</span>
+        <span class="ds-table-pagination__pages"
+          >{{ meta.current_page }} / {{ meta.last_page }}</span
+        >
         <button
           class="ds-table-pagination__btn"
           :disabled="meta.current_page >= meta.last_page"
