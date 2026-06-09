@@ -87,11 +87,13 @@ jobs:
 
       - name: Type check
         working-directory: frontend
-        run: pnpm exec vue-tsc --noEmit
+        run: pnpm --filter @platform/app exec vue-tsc -b
 
       - name: Lint
         working-directory: frontend
-        run: pnpm exec oxlint .
+        run: |
+          pnpm --filter @platform/ds exec oxlint .
+          pnpm --filter @platform/app exec oxlint .
 
       - name: Format check
         working-directory: frontend
@@ -99,4 +101,4 @@ jobs:
 
       - name: Tests (Vitest)
         working-directory: frontend
-        run: pnpm exec vitest run
+        run: pnpm --filter @platform/app exec vitest run
