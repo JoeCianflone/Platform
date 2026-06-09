@@ -1,16 +1,16 @@
 {
-    "name": "@platform/ds",
-    "private": true,
-    "version": "0.0.0",
-    "type": "module",
-    "exports": {
-        ".": "./index.ts",
-        "./styles/*": "./styles/*",
-        "./types/*": "./types/*",
-        "./composables/*": "./composables/*"
-    },
-    "peerDependencies": {
-        "@awesome.me/webawesome": "catalog:",
-        "vue": "catalog:"
-    }
+  "name": "@platform/ds",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./styles/*": "./styles/*",
+    "./types/*": "./types/*",
+    "./composables/*": "./composables/*"
+  },
+  "peerDependencies": {
+    "@awesome.me/webawesome": "catalog:",
+    "vue": "catalog:"
+  }
 }
