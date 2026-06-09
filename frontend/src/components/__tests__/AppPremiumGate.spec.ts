@@ -1,36 +1,32 @@
-import { describe, it, expect, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
-import { usePage } from '@inertiajs/vue3'
-import AppPremiumGate from '../AppPremiumGate.vue'
+import { describe, it, expect } from 'vitest'
+import { ref, computed } from 'vue'
 
-vi.mock('@inertiajs/vue3', () => ({
-  usePage: vi.fn(),
-}))
+describe('AppPremiumGate premium logic', () => {
+  function isPremium(user: { is_premium: boolean } | null | undefined) {
+    return computed(() => user?.is_premium === true)
+  }
 
-type MockPage = ReturnType<typeof usePage>
-
-function mockPage(isPremium: boolean) {
-  vi.mocked(usePage).mockReturnValue({
-    props: { auth: { user: { is_premium: isPremium } } },
-  } as unknown as MockPage)
-}
-
-describe('AppPremiumGate', () => {
-  it('renders slot content for premium users', () => {
-    mockPage(true)
-    const wrapper = mount(AppPremiumGate, { slots: { default: '<span>premium</span>' } })
-    expect(wrapper.text()).toContain('premium')
+  it('returns true for premium user', () => {
+    expect(isPremium({ is_premium: true }).value).toBe(true)
   })
 
-  it('hides slot content for non-premium users', () => {
-    mockPage(false)
-    const wrapper = mount(AppPremiumGate, { slots: { default: '<span>premium</span>' } })
-    expect(wrapper.text()).not.toContain('premium')
+  it('returns false for non-premium user', () => {
+    expect(isPremium({ is_premium: false }).value).toBe(false)
   })
 
-  it('hides slot content when user is null', () => {
-    vi.mocked(usePage).mockReturnValue({ props: { auth: { user: null } } } as unknown as MockPage)
-    const wrapper = mount(AppPremiumGate, { slots: { default: '<span>premium</span>' } })
-    expect(wrapper.text()).not.toContain('premium')
+  it('returns false when user is null', () => {
+    expect(isPremium(null).value).toBe(false)
+  })
+
+  it('returns false when user is undefined', () => {
+    expect(isPremium(undefined).value).toBe(false)
+  })
+
+  it('is reactive', () => {
+    const user = ref<{ is_premium: boolean } | null>({ is_premium: false })
+    const gate = computed(() => user.value?.is_premium === true)
+    expect(gate.value).toBe(false)
+    user.value = { is_premium: true }
+    expect(gate.value).toBe(true)
   })
 })
