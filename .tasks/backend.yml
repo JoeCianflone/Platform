@@ -26,7 +26,7 @@ tasks:
 
   build:routes:
     desc: Generate type-safe Wayfinder routes
-    cmd: php artisan wayfinder:generate --path=../frontend/types
+    cmd: php artisan wayfinder:generate --path=../frontend/src/types/wayfinder
 
   migrate:
     desc: Run pending migrations
