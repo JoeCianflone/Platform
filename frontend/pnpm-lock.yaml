@@ -122,6 +122,19 @@ importers:
       vue:
         specifier: 'catalog:'
         version: 3.5.35(typescript@6.0.3)
+    devDependencies:
+      '@vitejs/plugin-vue':
+        specifier: 'catalog:'
+        version: 6.0.7(vite@8.0.16(@types/node@25.9.2))(vue@3.5.35(typescript@6.0.3))
+      '@vue/test-utils':
+        specifier: 'catalog:'
+        version: 2.4.11(@vue/compiler-dom@3.5.35)(@vue/server-renderer@3.5.35(vue@3.5.35(typescript@6.0.3)))(vue@3.5.35(typescript@6.0.3))
+      happy-dom:
+        specifier: 'catalog:'
+        version: 18.0.1
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.8(@types/node@25.9.2)(happy-dom@18.0.1)(vite@8.0.16(@types/node@25.9.2))
 
 packages:
 

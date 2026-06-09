@@ -8,5 +8,11 @@
     "@inertiajs/vue3": "catalog:",
     "@platform/ds": "workspace:*",
     "vue": "catalog:"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "happy-dom": "catalog:",
+    "vitest": "catalog:"
   }
 }
