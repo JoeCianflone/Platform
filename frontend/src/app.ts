@@ -9,20 +9,20 @@ document.documentElement.classList.add('wa-theme-awesome')
 usePlatTheme().init()
 
 createInertiaApp({
-    resolve: async (name: string) => {
-        const path = `./pages/${name}.vue`
-        const page = pages[path]
-        if (!page) throw new Error(`[App] Page not found: ${name}`)
-        return (await page()).default
-    },
+  resolve: async (name: string) => {
+    const path = `./pages/${name}.vue`
+    const page = pages[path]
+    if (!page) throw new Error(`[App] Page not found: ${name}`)
+    return (await page()).default
+  },
 
-    setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
-            .use(plugin)
-            .mount(el!)
-    },
+  setup({ el, App, props, plugin }) {
+    createApp({ render: () => h(App, props) })
+      .use(plugin)
+      .mount(el!)
+  },
 
-    progress: {
-        color: '#4B5563',
-    },
+  progress: {
+    color: '#4B5563',
+  },
 })

@@ -7,65 +7,65 @@
 
 :root {
   /* === Surfaces === */
-  --ds-color-surface:          var(--wa-color-surface-default);
-  --ds-color-surface-raised:   var(--wa-color-surface-raised);
-  --ds-color-surface-lowered:  var(--wa-color-surface-lowered);
+  --ds-color-surface: var(--wa-color-surface-default);
+  --ds-color-surface-raised: var(--wa-color-surface-raised);
+  --ds-color-surface-lowered: var(--wa-color-surface-lowered);
 
   /* === Text === */
-  --ds-color-text:             var(--wa-color-text-normal);
-  --ds-color-text-muted:       var(--wa-color-text-quiet);
-  --ds-color-text-link:        var(--wa-color-text-link);
+  --ds-color-text: var(--wa-color-text-normal);
+  --ds-color-text-muted: var(--wa-color-text-quiet);
+  --ds-color-text-link: var(--wa-color-text-link);
 
   /* === Borders & Focus === */
-  --ds-color-border:           var(--wa-color-surface-border);
-  --ds-color-focus:            var(--wa-color-focus);
+  --ds-color-border: var(--wa-color-surface-border);
+  --ds-color-focus: var(--wa-color-focus);
 
   /* === Primary (brand) === */
-  --ds-color-primary:          var(--wa-color-brand-border-loud);
-  --ds-color-primary-fill:     var(--wa-color-brand-fill-loud);
-  --ds-color-primary-subtle:   var(--wa-color-brand-fill-quiet);
-  --ds-color-on-primary:       var(--wa-color-brand-on-loud);
+  --ds-color-primary: var(--wa-color-brand-border-loud);
+  --ds-color-primary-fill: var(--wa-color-brand-fill-loud);
+  --ds-color-primary-subtle: var(--wa-color-brand-fill-quiet);
+  --ds-color-on-primary: var(--wa-color-brand-on-loud);
 
   /* === Success === */
-  --ds-color-success:          var(--wa-color-success-border-loud);
-  --ds-color-success-fill:     var(--wa-color-success-fill-loud);
-  --ds-color-on-success:       var(--wa-color-success-on-loud);
+  --ds-color-success: var(--wa-color-success-border-loud);
+  --ds-color-success-fill: var(--wa-color-success-fill-loud);
+  --ds-color-on-success: var(--wa-color-success-on-loud);
 
   /* === Warning === */
-  --ds-color-warning:          var(--wa-color-warning-border-loud);
-  --ds-color-warning-fill:     var(--wa-color-warning-fill-loud);
-  --ds-color-on-warning:       var(--wa-color-warning-on-loud);
+  --ds-color-warning: var(--wa-color-warning-border-loud);
+  --ds-color-warning-fill: var(--wa-color-warning-fill-loud);
+  --ds-color-on-warning: var(--wa-color-warning-on-loud);
 
   /* === Danger === */
-  --ds-color-danger:           var(--wa-color-danger-border-loud);
-  --ds-color-danger-fill:      var(--wa-color-danger-fill-loud);
-  --ds-color-on-danger:        var(--wa-color-danger-on-loud);
+  --ds-color-danger: var(--wa-color-danger-border-loud);
+  --ds-color-danger-fill: var(--wa-color-danger-fill-loud);
+  --ds-color-on-danger: var(--wa-color-danger-on-loud);
 
   /* === Neutral === */
-  --ds-color-neutral:          var(--wa-color-neutral-border-loud);
-  --ds-color-neutral-fill:     var(--wa-color-neutral-fill-loud);
-  --ds-color-on-neutral:       var(--wa-color-neutral-on-loud);
+  --ds-color-neutral: var(--wa-color-neutral-border-loud);
+  --ds-color-neutral-fill: var(--wa-color-neutral-fill-loud);
+  --ds-color-on-neutral: var(--wa-color-neutral-on-loud);
 
   /* === Spacing (mapped to WA space scale) === */
-  --ds-space-xs:   var(--wa-space-xs);   /* 8px  */
-  --ds-space-sm:   var(--wa-space-s);    /* 12px */
-  --ds-space-md:   var(--wa-space-m);    /* 16px */
-  --ds-space-lg:   var(--wa-space-l);    /* 24px */
-  --ds-space-xl:   var(--wa-space-xl);   /* 32px */
-  --ds-space-2xl:  var(--wa-space-2xl);  /* 40px */
+  --ds-space-xs: var(--wa-space-xs); /* 8px  */
+  --ds-space-sm: var(--wa-space-s); /* 12px */
+  --ds-space-md: var(--wa-space-m); /* 16px */
+  --ds-space-lg: var(--wa-space-l); /* 24px */
+  --ds-space-xl: var(--wa-space-xl); /* 32px */
+  --ds-space-2xl: var(--wa-space-2xl); /* 40px */
 
   /* === Typography === */
-  --ds-font-size-xs:  var(--wa-font-size-xs);  /* 12px */
-  --ds-font-size-sm:  var(--wa-font-size-s);   /* 14px */
-  --ds-font-size-md:  var(--wa-font-size-m);   /* 16px */
-  --ds-font-size-lg:  var(--wa-font-size-l);   /* 20px */
-  --ds-font-size-xl:  var(--wa-font-size-xl);  /* 25px */
+  --ds-font-size-xs: var(--wa-font-size-xs); /* 12px */
+  --ds-font-size-sm: var(--wa-font-size-s); /* 14px */
+  --ds-font-size-md: var(--wa-font-size-m); /* 16px */
+  --ds-font-size-lg: var(--wa-font-size-l); /* 20px */
+  --ds-font-size-xl: var(--wa-font-size-xl); /* 25px */
 
   /* === Border Radius === */
-  --ds-radius-sm:    var(--wa-border-radius-s);
-  --ds-radius-md:    var(--wa-border-radius-m);
-  --ds-radius-lg:    var(--wa-border-radius-l);
-  --ds-radius-full:  var(--wa-border-radius-pill);
+  --ds-radius-sm: var(--wa-border-radius-s);
+  --ds-radius-md: var(--wa-border-radius-m);
+  --ds-radius-lg: var(--wa-border-radius-l);
+  --ds-radius-full: var(--wa-border-radius-pill);
 
   /* === Elevation (WA color-mix shadow approach) === */
   --ds-shadow-sm: 0 1px 2px color-mix(in oklab, var(--wa-color-text-normal) 8%, transparent);

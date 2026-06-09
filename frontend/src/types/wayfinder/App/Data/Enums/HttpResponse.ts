@@ -13,6 +13,15 @@ export const UNPROCESSABLE = 422
 /**
  * @see [App\Data\Enums\HttpResponse](/Users/joecianflone/projects/me/platform/backend/app/Data/Enums/HttpResponse.php)
  */
-export const HttpResponse = { BAD_REQUEST, CREATED, FORBIDDEN, NOT_FOUND, OK, SERVER_ERROR, UNAUTHORIZED, UNPROCESSABLE } as const
+export const HttpResponse = {
+  BAD_REQUEST,
+  CREATED,
+  FORBIDDEN,
+  NOT_FOUND,
+  OK,
+  SERVER_ERROR,
+  UNAUTHORIZED,
+  UNPROCESSABLE,
+} as const
 
 export default HttpResponse

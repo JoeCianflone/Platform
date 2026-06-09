@@ -1,25 +1,25 @@
 {
-    "name": "@platform/frontend",
-    "private": true,
-    "version": "0.0.0",
-    "type": "module",
-    "scripts": {
-        "format": "oxfmt --write .",
-        "format:check": "oxfmt --check ."
-    },
-    "devDependencies": {
-        "@awesome.me/webawesome": "catalog:",
-        "@types/node": "catalog:",
-        "@vitejs/plugin-vue": "catalog:",
-        "@vue/test-utils": "catalog:",
-        "@vue/tsconfig": "catalog:",
-        "laravel-vite-plugin": "catalog:",
-        "oxfmt": "catalog:",
-        "oxlint": "catalog:",
-        "typescript": "catalog:",
-        "vite": "catalog:",
-        "vitest": "catalog:",
-        "vue": "catalog:",
-        "vue-tsc": "catalog:"
-    }
+  "name": "@platform/frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check ."
+  },
+  "devDependencies": {
+    "@awesome.me/webawesome": "catalog:",
+    "@types/node": "catalog:",
+    "@vitejs/plugin-vue": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "@vue/tsconfig": "catalog:",
+    "laravel-vite-plugin": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:",
+    "vue-tsc": "catalog:"
+  }
 }

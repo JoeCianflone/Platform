@@ -5,16 +5,16 @@ import type { IconAnimation } from '@awesome.me/webawesome/dist/components/icon/
 
 // Props & Emits ......................................................
 withDefaults(
-    defineProps<{
-        name: string
-        label?: string
-        size?: string
-        animation?: IconAnimation
-    }>(),
-    { label: '' },
+  defineProps<{
+    name: string
+    label?: string
+    size?: string
+    animation?: IconAnimation
+  }>(),
+  { label: '' }
 )
 </script>
 
 <template>
-    <wa-icon :name="name" :label="label" :size="size" :animation="animation" />
+  <wa-icon :name="name" :label="label" :size="size" :animation="animation" />
 </template>

@@ -6,28 +6,28 @@
 
 :root {
   /* === Duration === */
-  --ds-duration-fast:    120ms;
-  --ds-duration-normal:  200ms;
-  --ds-duration-slow:    300ms;
+  --ds-duration-fast: 120ms;
+  --ds-duration-normal: 200ms;
+  --ds-duration-slow: 300ms;
 
   /* === Easing === */
-  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
-  --ds-ease-emphasized:  cubic-bezier(0.2, 0, 0, 1);
-  --ds-ease-accelerate:  cubic-bezier(0.3, 0, 1, 1);
-  --ds-ease-decelerate:  cubic-bezier(0, 0, 0, 1);
+  --ds-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0, 1);
 
   /* Override WA transition tokens to keep WA components in sync */
-  --wa-transition-fast:   var(--ds-duration-fast);
+  --wa-transition-fast: var(--ds-duration-fast);
   --wa-transition-normal: var(--ds-duration-normal);
-  --wa-transition-slow:   var(--ds-duration-slow);
+  --wa-transition-slow: var(--ds-duration-slow);
 }
 
 /* WA handles prefers-reduced-motion internally for --wa-transition-*.
    Mirror for --ds-duration-* so our own transitions also go instant. */
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --ds-duration-fast:   0ms;
+    --ds-duration-fast: 0ms;
     --ds-duration-normal: 0ms;
-    --ds-duration-slow:   0ms;
+    --ds-duration-slow: 0ms;
   }
 }
