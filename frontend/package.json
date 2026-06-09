@@ -13,6 +13,7 @@
     "@vitejs/plugin-vue": "catalog:",
     "@vue/test-utils": "catalog:",
     "@vue/tsconfig": "catalog:",
+    "happy-dom": "catalog:",
     "laravel-vite-plugin": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",

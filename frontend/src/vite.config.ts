@@ -36,4 +36,8 @@ export default defineConfig({
   server: {
     watch: {},
   },
+  test: {
+    environment: 'happy-dom',
+    globals: true,
+  },
 })
