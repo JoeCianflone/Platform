@@ -36,6 +36,9 @@
       "files": ["**/__tests__/**/*.{ts,vue}", "**/*.test.{ts,vue}", "**/*.spec.{ts,vue}"],
       "env": {
         "vitest/globals": true
+      },
+      "rules": {
+        "no-restricted-imports": "off"
       }
     },
     {

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { usePage } from '@inertiajs/vue3'
-import AppPremiumGate from '@/components/AppPremiumGate.vue'
+import AppPremiumGate from '../AppPremiumGate.vue'
 
 vi.mock('@inertiajs/vue3', () => ({
   usePage: vi.fn(),
