@@ -40,7 +40,7 @@ tasks:
 
   dev:
     desc: Start Vite dev server
-    deps: [frontend:dev]
+    deps: [backend:env:generate, frontend:dev]
 
   dev:stripe:
     desc: Forward Stripe webhooks to local

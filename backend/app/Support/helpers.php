@@ -48,12 +48,6 @@ if (! function_exists('module_pages_path')) {
 
 if (! function_exists('app_response')) {
     /**
-     * Build an API or Inertia response with a unified envelope shape.
-     *
-     * - $page = null            → always JSON (ApiResponse)
-     * - $page + Inertia request → InertiaResponse with envelope as props
-     * - $page + non-Inertia    → JSON (page ignored)
-     *
      * @param  array<int|string, mixed>|Collection<int|string, mixed>|LengthAwarePaginator<int, mixed>  $data
      * @param  array<string, mixed>  $errors
      */

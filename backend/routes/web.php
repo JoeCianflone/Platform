@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Responses\AppResponseFactory;
 
 Route::get('/', function () {
-    return app_response('Home/Index');
+    // return AppResponseFactory::make()
+    return "Hello World";
 });
