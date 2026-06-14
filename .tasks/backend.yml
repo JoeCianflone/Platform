@@ -11,10 +11,27 @@ tasks:
     desc: Install PHP deps, configure env, migrate, and seed
     cmds:
       - composer install
-      - cp .env.example .env
+      - php artisan env:generate
       - php artisan key:generate
       - php artisan migrate --seed
       - php artisan storage:link
+
+  env:generate:
+    desc: Generate .env from .env.example + .env.local
+    sources:
+      - ../.env.example
+      - ../.env.local
+    cmds:
+      - php artisan env:generate
+
+  env:watch:
+    desc: Watch .env.example + .env.local and regenerate .env on change
+    watch: true
+    sources:
+      - ../.env.example
+      - ../.env.local
+    cmds:
+      - php artisan env:generate
 
   dev:queue:
     desc: Laravel Horizon queue worker
