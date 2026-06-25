@@ -26,7 +26,6 @@ backend/
             ├── Data/ValueObjects/
             ├── Domain/Actions/
             ├── Domain/Events/
-            ├── Domain/Queries/Projections/
             ├── Domain/Scopes/
             ├── Eloquent/Models/
             ├── Http/Controllers/
@@ -91,7 +90,7 @@ Controller (final, invokable)
 * Never mutate state — reads only
 * Never return Eloquent models — always DTOs or Collections
 * Every filter uses a Scope class — no raw `where()` inside Query classes
-* Every query uses a Projection — no SELECT \*
+* Every query uses explicit `select([...])` — no SELECT \*
 * Interface in `Contracts/Queries/`, concrete in `Domain/Queries/`
 * Naming: interface = `ItemQueryContract`, concrete = `ItemQuery`
 
@@ -100,15 +99,6 @@ Controller (final, invokable)
 * Always `final`
 * One responsibility: filter rows
 * Named descriptively: `PublishedItems`, `WithSlug`, not `ItemScope`
-* Never SELECT columns — that's Projections
-
-## Projections
-
-* Always `final`
-* One responsibility: shape columns (SELECT list)
-* Live in `Domain/Queries/Projections/`
-* No SELECT \* ever
-
 ## Data Layer
 
 | Type             | Purpose                           | Validates?               |
@@ -191,7 +181,7 @@ Jobs dispatched FROM Actions or Listeners — never from controllers directly.
 
 ## Final Class Policy
 
-These MUST always be `final`: Controllers, Actions, Queries, Scopes, Projections, DTOs, Snapshots, Collections, ValueObjects, Events, Listeners, Workflows.
+These MUST always be `final`: Controllers, Actions, Queries, Scopes, DTOs, Snapshots, Collections, ValueObjects, Events, Listeners, Workflows.
 
 ## Creating New Files
 
@@ -241,7 +231,6 @@ cd backend && vendor/bin/pint --dirty --format agent
 | Query           | `{Entity}Query`         | `UserQuery`            |
 | Scope interface | `{Entity}Scope`         | `ItemScope`            |
 | Scope class     | descriptive             | `PublishedItems`       |
-| Projection      | `{Purpose}Projection`   | `FeedProjection`       |
 | Workflow        | `{Process}Workflow`     | `RegisterUserWorkflow` |
 | Controller      | `{UseCase}Controller`   | `LoginController`      |
 | DataObject      | `{Concept}DataObject`   | `ItemDataObject`       |

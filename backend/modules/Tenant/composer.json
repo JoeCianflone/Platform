@@ -1,0 +1,23 @@
+{
+    "name": "app/tenant",
+    "description": "Tenant module",
+    "type": "library",
+    "version": "1.0",
+    "license": "proprietary",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "App\\Tenant\\": "src/",
+            "App\\Tenant\\Database\\Factories\\": "database/factories/",
+            "App\\Tenant\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "App\\Tenant\\TenantServiceProvider"
+            ]
+        }
+    }
+}

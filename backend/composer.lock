@@ -4,8 +4,40 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b2e05a1af69053ed7b0e5dee64890b3b",
+    "content-hash": "88bd4b1276b504ee8c9d3cd73f73dc12",
     "packages": [
+        {
+            "name": "app/tenant",
+            "version": "1.0",
+            "dist": {
+                "type": "path",
+                "url": "modules/Tenant",
+                "reference": "448e61ae12fbf5c9fe545691c5bc2c236b4285f3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "App\\Tenant\\TenantServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "App\\Tenant\\": "src/",
+                    "App\\Tenant\\Database\\Factories\\": "database/factories/",
+                    "App\\Tenant\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Tenant module",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
         {
             "name": "blade-ui-kit/blade-heroicons",
             "version": "2.7.0",
@@ -15841,6 +15873,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "app/tenant": 20,
         "laravel/wayfinder": 20
     },
     "prefer-stable": true,

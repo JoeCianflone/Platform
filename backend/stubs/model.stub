@@ -5,6 +5,7 @@ namespace {{ namespace }};
 {{ factoryImport }}
 use Illuminate\Database\Eloquent\Model;
 
+{{ factoryAttribute }}
 class {{ class }} extends Model
 {
     {{ factory }}

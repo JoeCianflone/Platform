@@ -39,7 +39,6 @@ PSR-4: `App\{Name}\` → `modules/{Name}/src/`
 | Query           | `{Entity}Query`         | `ItemQuery`            |
 | Scope interface | `{Entity}Scope`         | `ItemScope`            |
 | Scope class     | descriptive             | `PublishedItems`       |
-| Projection      | `{Purpose}Projection`   | `FeedProjection`       |
 | Workflow        | `{Process}Workflow`     | `RegisterUserWorkflow` |
 | Controller      | `{UseCase}Controller`   | `LoginController`      |
 | DataObject      | `{Concept}DataObject`   | `ItemDataObject`       |
@@ -76,7 +75,7 @@ return AppResponseFactory::error('YourModule/Show', 'Not authorized');
 - **Wayfinder** — never hardcoded routes
 - **WebAwesome** — `wa-button`, `wa-icon`, `wa-card`, etc.
 - **Pint** — `cd backend && vendor/bin/pint --dirty --format agent` after every PHP change
-- **Final classes** — Controllers, Actions, Queries, Scopes, Projections, DTOs, Snapshots, Events, Workflows
+- **Final classes** — Controllers, Actions, Queries, Scopes, DTOs, Snapshots, Events, Workflows
 
 ---
 

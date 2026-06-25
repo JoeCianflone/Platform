@@ -8,4 +8,5 @@ return [
     AppServiceProvider::class,
     FeatureServiceProvider::class,
     ModularArtisanServiceProvider::class,
+    App\Tenant\TenantServiceProvider::class,
 ];

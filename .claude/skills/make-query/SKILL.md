@@ -1,6 +1,6 @@
 ---
 name: make-query
-description: "Use this skill when creating a Query, Scope, or Projection. Triggers on: 'create a query', 'make a query', 'add scope', 'new scope', 'add projection', 'read-only query', 'fetch data', 'list query'. Covers: QueryContract interface, Query concrete class, Scope classes, Projection classes, and binding in the ServiceProvider. Queries never mutate state."
+description: "Use this skill when creating a Query or Scope. Triggers on: 'create a query', 'make a query', 'add scope', 'new scope', 'read-only query', 'fetch data', 'list query'. Covers: QueryContract interface, Query concrete class, Scope classes, and binding in the ServiceProvider. Queries never mutate state."
 license: MIT
 metadata:
   author: your-app
@@ -8,7 +8,7 @@ metadata:
 
 # Make Query
 
-Queries are composable read systems. Scopes filter rows. Projections shape columns. Both are always explicit.
+Queries are composable read systems. Scopes filter rows. Column selection is explicit inline — never SELECT *.
 
 ## Naming
 
@@ -18,7 +18,6 @@ Queries are composable read systems. Scopes filter rows. Projections shape colum
 | Concrete | `{Entity}Query` | `ItemQuery` |
 | Scope interface | `{Entity}Scope` | `ItemScope` |
 | Scope class | descriptive phrase | `PublishedItems`, `WithSlug`, `ForUser` |
-| Projection | `{Purpose}Projection` | `FeedProjection`, `DetailProjection` |
 
 ## Step 1 — Create the contract
 
@@ -88,29 +87,7 @@ final class {ScopeName} implements {Entity}Scope
 }
 ```
 
-## Step 4 — Create Projection classes
-
-```bash
-cd backend && php artisan make:class Domain/Queries/Projections/{Purpose}Projection --module={Name} --no-interaction
-```
-
-```php
-<?php declare(strict_types=1);
-
-namespace App\{Name}\Domain\Queries\Projections;
-
-use Illuminate\Database\Eloquent\Builder;
-
-final class {Purpose}Projection
-{
-    public function apply(Builder $query): void
-    {
-        $query->select('id', 'slug', /* only needed columns */);
-    }
-}
-```
-
-## Step 5 — Create the concrete Query
+## Step 4 — Create the concrete Query
 
 ```bash
 cd backend && php artisan make:class Domain/Queries/{Entity}Query --module={Name} --no-interaction
@@ -164,7 +141,7 @@ final class {Entity}Query implements {Entity}QueryContract
 }
 ```
 
-## Step 6 — Bind in ServiceProvider
+## Step 5 — Bind in ServiceProvider
 
 ```php
 $this->app->bind(
@@ -173,7 +150,7 @@ $this->app->bind(
 );
 ```
 
-## Step 7 — Run Pint
+## Step 6 — Run Pint
 
 ```bash
 cd backend && vendor/bin/pint --dirty --format agent
@@ -181,11 +158,10 @@ cd backend && vendor/bin/pint --dirty --format agent
 
 ## Rules
 
-- Scopes filter rows, Projections shape columns — both always explicit (never SELECT *)
+- Scopes filter rows — always use a Scope class, even for simple filters
+- Column selection is explicit inline `select([...])` in the Query class — never SELECT *
 - Queries never mutate state — reads only
 - Queries never return Eloquent models — always DTOs or Collections
 - Scope classes are `final`, implement the `{Entity}Scope` interface
-- Projection classes are `final`
 - The Query concrete is `final`
 - Never bypass scopes with raw `where()` calls inside the Query class itself
-- Always use a Scope class, even for simple filters

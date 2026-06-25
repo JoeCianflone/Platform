@@ -210,8 +210,7 @@ modules/{Name}/
     │   ├── Actions/              # Concrete action classes (CreateItem.php)
     │   ├── Events/
     │   ├── Listeners/
-    │   ├── Queries/              # Concrete query classes + Projections/
-    │   │   └── Projections/      # Shaped read models (DashboardProjection.php)
+    │   ├── Queries/              # Concrete query classes
     │   ├── Resolvers/
     │   └── Scopes/               # Query constraints (PublishedItems.php)
     ├── Eloquent/
@@ -300,7 +299,7 @@ php artisan make:scope PublishedItems --module=YourModule --no-interaction
 php artisan make:class Support/Http/AppResponse --no-interaction
 ```
 
-When creating a new model, always create its factory and seeder too.
+When creating a new model, always create its factory and seeder too. Pass `--factory` to `make:model` to generate both and wire the `#[UseFactory]` / `#[UseModel]` attributes automatically, or create them separately and add the attributes manually.
 
 ---
 
@@ -335,23 +334,12 @@ Default: prefer Events. Only go synchronous when the return value is structurall
 
 Jobs are dispatched **from** Actions or Listeners — never from controllers directly.
 
-### Scope vs Projection
-
-These are not alternatives — both are always required on every query.
-
-| Responsibility    | Pattern                                  |
-| ----------------- | ---------------------------------------- |
-| Filter **rows**   | Scope class implementing `{Entity}Scope` |
-| Shape **columns** | Projection class                         |
-
-Never SELECT * in production queries. If a query has no Projection, it needs one.
-
 ### Query vs Action
 
-| Condition                      | Use                                    |
-| ------------------------------ | -------------------------------------- |
-| Reading data, no side effects  | Query contract + Scope(s) + Projection |
-| Writing data, has side effects | Action contract                        |
+| Condition                      | Use                         |
+| ------------------------------ | --------------------------- |
+| Reading data, no side effects  | Query contract + Scope(s)   |
+| Writing data, has side effects | Action contract             |
 
 Queries never mutate. Actions never read-and-return without also writing.
 
@@ -428,21 +416,20 @@ Actions contain all business logic within a module. The contract-bound action is
 
 ### 4. Query System — Scope-Driven
 
-Queries are composable read systems. Scopes filter rows. Projections shape columns. Both are always explicit — never SELECT *.
+Queries are composable read systems. Scopes filter rows. Column selection is explicit inline — never SELECT *.
 
 **Naming convention:**
 - Contract (in `Contracts/Queries/`): `ItemQueryContract` — `QueryContract` suffix
 - Concrete (in `Domain/Queries/`): `ItemQuery` — `Query` suffix
 - Scope interface: `{Entity}Scope` (e.g. `ItemScope`)
 - Scope class: descriptive phrase (e.g. `PublishedItems`, `WithSlug`)
-- Projection (in `Domain/Queries/Projections/`): `{Purpose}Projection`
 
 **Rules:**
 - Queries never mutate state — reads only
 - Queries never return Eloquent models — always DTOs or Collections
 - Every filter uses a Scope class — no raw `where()` inside Query classes
-- Every query uses a Projection — no SELECT *
-- Scope classes and Projections are `final`
+- Every query uses explicit `select([...])` — no SELECT *
+- Scope classes are `final`
 - Query concrete is `final`
 
 > See the `make-query` skill for full scaffolding steps and code templates.
@@ -670,7 +657,6 @@ Event payloads always carry a Snapshot, never a model: `event(new ItemCreated($i
 - Actions
 - Queries
 - Scopes
-- Projections
 - DTOs
 - Snapshots
 - Collections
@@ -718,7 +704,6 @@ Local override: `PREMIUM_OVERRIDE=true` in `.env` bypasses premium checks in the
 | Query           | `{Entity}Query`         | `UserQuery`            |
 | Scope interface | `{Entity}Scope`         | `ItemScope`            |
 | Scope class     | descriptive             | `PublishedItems`       |
-| Projection      | `{Purpose}Projection`   | `FeedProjection`       |
 | Workflow        | `{Process}Workflow`     | `RegisterUserWorkflow` |
 | Controller      | `{UseCase}Controller`   | `LoginController`      |
 | DataObject      | `{Concept}DataObject`   | `ItemDataObject`       |
@@ -780,6 +765,10 @@ import Foo from '../components/Foo.vue' // use @/components/Foo.vue
 
 // ❌ Never use npm or yarn — pnpm only
 
+// ❌ Never use newFactory() or protected $model in factories — use #[UseFactory] / #[UseModel] attributes
+protected static function newFactory(): ItemFactory { ... }
+protected $model = Item::class;
+
 // ❌ Never use SCSS — scoped CSS only
 
 // ❌ Never create a Workflow inside a module
@@ -800,6 +789,41 @@ Follow PHP 8.4 conventions throughout. These are non-negotiable.
 - Enum keys in TitleCase (`case Light = 'light'`)
 - Always curly braces on control structures — no one-liner `if`
 - Descriptive boolean names: `$isRegisteredForPremium` not `$premium`
+
+### Model / Factory Wiring — Attribute Pattern
+
+Use Laravel 13 attributes instead of `newFactory()` / `protected $model`.
+
+**Model** — `#[UseFactory]` on the class, no `newFactory()` method:
+
+```php
+use App\YourModule\Database\Factories\ItemFactory;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+#[UseFactory(ItemFactory::class)]
+final class Item extends Model
+{
+    use HasFactory;
+}
+```
+
+**Factory** — `#[UseModel]` on the class, no `protected $model` property:
+
+```php
+use App\YourModule\Eloquent\Models\Item;
+use Illuminate\Database\Eloquent\Factories\Attributes\UseModel;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+#[UseModel(Item::class)]
+final class ItemFactory extends Factory
+{
+    public function definition(): array { ... }
+}
+```
+
+The `make:model --factory` command generates both files wired correctly. When creating separately, add the attributes manually — never use `newFactory()` or `protected $model`.
 
 ### Pint — Run After Every PHP Change
 

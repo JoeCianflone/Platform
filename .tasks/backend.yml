@@ -100,3 +100,18 @@ tasks:
   remove:
     desc: composer remove (task backend:remove -- vendor/package)
     cmd: composer remove {{.CLI_ARGS}}
+
+  tenant:migrate:
+    desc: Run tenant-migrations for all tenants
+    dir: backend
+    cmd: php artisan tenant:migrate
+
+  tenant:migrate:one:
+    desc: Run tenant-migrations for one tenant (TENANT=id)
+    dir: backend
+    cmd: php artisan tenant:migrate --tenant={{.TENANT}}
+
+  tenant:run:
+    desc: Run artisan command in tenant context (TENANT=id CMD="command:name")
+    dir: backend
+    cmd: php artisan tenant:run {{.TENANT}} {{.CMD}}

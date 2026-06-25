@@ -24,7 +24,6 @@ Review the provided code against the project's architecture rules. Report each v
 - [ ] Actions (concrete): `final`, extends `Action`, implements its contract
 - [ ] Queries (concrete): `final`, implements its QueryContract
 - [ ] Scopes: `final`, implements `{Entity}Scope`
-- [ ] Projections: `final`
 - [ ] DataObjects: `final readonly`, implements `App\Contracts\DataObject`
 - [ ] Snapshots: `final readonly`, extends `App\Support\Snapshots\Snapshot`
 - [ ] ValueObjects: `final readonly`, implements `App\Contracts\ValueObject`
@@ -55,7 +54,7 @@ Review the provided code against the project's architecture rules. Report each v
 - [ ] Never mutates state
 - [ ] Never returns Eloquent models — always DTOs
 - [ ] Uses Scope classes for all filtering (no raw `where()` in Query class)
-- [ ] Uses Projection classes for column selection (no SELECT *)
+- [ ] Uses explicit `select([...])` — no SELECT *
 
 ### Naming
 - [ ] Action interface: `{Verb}{Noun}Action`
@@ -63,7 +62,6 @@ Review the provided code against the project's architecture rules. Report each v
 - [ ] Query contract: `{Entity}QueryContract`
 - [ ] Query concrete: `{Entity}Query`
 - [ ] Scope classes: descriptive phrase (`PublishedItems`, `WithSlug`)
-- [ ] Projection: `{Purpose}Projection`
 - [ ] Controllers: `{UseCase}Controller`
 - [ ] DataObjects: `{Concept}DataObject`
 - [ ] Snapshots: `{Concept}Snapshot`

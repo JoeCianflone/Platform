@@ -62,7 +62,6 @@ modules/{Name}/
     │   ├── Events/
     │   ├── Listeners/
     │   ├── Queries/
-    │   │   └── Projections/
     │   ├── Resolvers/
     │   └── Scopes/
     ├── Eloquent/
