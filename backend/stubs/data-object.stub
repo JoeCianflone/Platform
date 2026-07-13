@@ -3,7 +3,7 @@
 namespace {{ namespace }};
 
 use App\Contracts\DataObject;
-use App\Concerns\Data\DataObject\DataObjectMaker;
+use App\Concerns\Data\DataObjects\DataObjectMaker;
 
 final readonly class {{ class }} implements DataObject
 {

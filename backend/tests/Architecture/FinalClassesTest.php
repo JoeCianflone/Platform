@@ -18,10 +18,12 @@ foreach (moduleNamespaces() as $module) {
     foreach ($subNamespaces as $sub) {
         arch("{$module}\\{$sub} are final")
             ->expect("{$module}\\{$sub}")
+            ->classes()
             ->toBeFinal();
     }
 }
 
 arch('App\\Workflows are final')
     ->expect('App\\Workflows')
+    ->classes()
     ->toBeFinal();

@@ -2,7 +2,7 @@
 
 use App\Contracts\DataObject;
 use App\Contracts\ValueObject;
-use App\Support\Snapshots\Snapshot;
+use App\Contracts\Snapshot as SnapshotContract;
 
 foreach (moduleNamespaces() as $module) {
     arch("{$module} DataObjects are readonly")
@@ -25,7 +25,7 @@ foreach (moduleNamespaces() as $module) {
         ->expect("{$module}\\Data\\ValueObjects")
         ->toImplement(ValueObject::class);
 
-    arch("{$module} Snapshots extend base Snapshot")
+    arch("{$module} Snapshots implement Snapshot contract")
         ->expect("{$module}\\Data\\Snapshots")
-        ->toExtend(Snapshot::class);
+        ->toImplement(SnapshotContract::class);
 }

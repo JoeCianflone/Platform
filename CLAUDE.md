@@ -113,6 +113,7 @@ It intentionally avoids:
 - Modules NEVER expose Workflows
 - All dependency resolution uses the Laravel container — never `new WorkflowOrAction()`
 - Enforcement is mechanical (PHPStan + Pest + ESLint)
+- Prefer composition over inheritance — use traits to share behavior, not abstract base classes; or call shared utilities directly
 
 ---
 
@@ -166,13 +167,12 @@ All Laravel application code lives in `backend/`. Everything outside `backend/mo
 backend/
 ├── app/
 │   ├── Workflows/                # Cross-module orchestration ONLY
-│   ├── Support/                  # Shared infrastructure
-│   │   ├── Actions/              # Base Action class
-│   │   ├── DataTransferObjects/  # Base Data class
-│   │   ├── Snapshots/            # Base Snapshot class
-│   │   ├── ValueObjects/         # Base ValueObject class
-│   │   └── Http/
-│   │       └── AppResponse.php   # Always use this, never bare inertia()
+│   │── Actions/              # Base Action class
+│   │── DataObjects/            # Base Data class
+│   │── Snapshots/            # Base Snapshot class
+│   │── ValueObjects/         # Base ValueObject class
+│   │── Http/
+│   │   └── AppResponse.php   # Always use this, never bare inertia()
 │   └── Providers/
 │       ├── ModuleServiceProvider.php
 │       └── FeatureServiceProvider.php
@@ -336,10 +336,10 @@ Jobs are dispatched **from** Actions or Listeners — never from controllers dir
 
 ### Query vs Action
 
-| Condition                      | Use                         |
-| ------------------------------ | --------------------------- |
-| Reading data, no side effects  | Query contract + Scope(s)   |
-| Writing data, has side effects | Action contract             |
+| Condition                      | Use                       |
+| ------------------------------ | ------------------------- |
+| Reading data, no side effects  | Query contract + Scope(s) |
+| Writing data, has side effects | Action contract           |
 
 Queries never mutate. Actions never read-and-return without also writing.
 
@@ -384,7 +384,9 @@ Workflows coordinate multiple modules. They live exclusively in `App\Workflows` 
 - call module Query Contracts
 - coordinate multiple modules
 - manage DB transactions
-- map DTOs between modules
+- convert a module's DataObject to a Snapshot (`->toSnapshot()`) when passing it into another module's Action/Query, or when returning to the caller
+
+A Workflow's own return value is always a Snapshot (or a collection/composite of Snapshots) — never a DataObject. A Workflow only exists because it spans ≥2 modules, so whatever it hands back is by definition crossing a module boundary. See §5/§7 for the DataObject-vs-Snapshot rule this follows.
 
 **Workflows MUST NOT:**
 - contain business logic (no domain-rule `if` statements)
@@ -404,13 +406,33 @@ Actions contain all business logic within a module. The contract-bound action is
 
 **Rules:**
 - `final` — always
-- Receive DTOs, return DTOs — never Eloquent models
+- Receive DataObjects, return DataObjects — never Eloquent models, and never Snapshots. An Action's return value is consumed by a Controller or a Workflow in the *same* call — it hasn't crossed a module boundary yet, so it stays in the module's native DataObject shape. See §5/§7.
 - Inject the interface, never the concrete class
 - `Gate::authorize()` lives in Actions — not controllers
 - One Action per use case — no god methods
 - Wrap writes in `DB::transaction()`
-- Fire events with `toSnapshot()` — never raw models
+- Fire events with `toSnapshot()` — never raw models, and never the DataObject you're about to return. Build the Snapshot from the model separately from the DataObject you return — two conversions, one for the return value, one for the event.
 - Bind in `ServiceProvider::register()` — never auto-discovered
+
+```php
+// ✅ Action returns a DataObject, fires the event with a Snapshot built alongside it
+final class CreateItem implements CreateItemAction
+{
+    public function handle(CreateItemDataObject $data): ItemDataObject
+    {
+        return DB::transaction(function () use ($data): ItemDataObject {
+            $item = Item::create([...]);
+
+            event(new ItemCreated($item->toSnapshot()));
+
+            return ItemDataObject::fromModel($item);
+        });
+    }
+}
+
+// ❌ Never return the Snapshot from the Action itself
+public function handle(CreateItemDataObject $data): ItemSnapshot { ... }
+```
 
 > See the `make-action` skill for full scaffolding steps and code templates.
 
@@ -418,11 +440,37 @@ Actions contain all business logic within a module. The contract-bound action is
 
 Queries are composable read systems. Scopes filter rows. Column selection is explicit inline — never SELECT *.
 
+**One Query class per entity — not one per use case.** A Query class distinguishes only by **result shape** (one row / many rows / paginated). It never distinguishes by which column is filtered. Filtering variation belongs entirely to Scope objects, composed by the caller. This is what prevents Query-class explosion — you never write `FindItemByDomain`, `FindItemById`, `FindItemBySlug`, etc. `first()` / `get()` / `paginate()` taking variadic Scopes **is** the generic "Find" — it's a parameter, not a class.
+
 **Naming convention:**
 - Contract (in `Contracts/Queries/`): `ItemQueryContract` — `QueryContract` suffix
 - Concrete (in `Domain/Queries/`): `ItemQuery` — `Query` suffix
 - Scope interface: `{Entity}Scope` (e.g. `ItemScope`)
 - Scope class: descriptive phrase (e.g. `PublishedItems`, `WithSlug`)
+
+**Contract shape — fixed, three methods, no named finders:**
+
+```php
+interface ItemQueryContract
+{
+    public function first(ItemScope ...$scopes): ?ItemDataObject;
+
+    public function get(ItemScope ...$scopes): ItemCollection;
+
+    public function paginate(int $perPage, ItemScope ...$scopes): ItemCollection;
+}
+```
+
+```php
+// ✅ Caller composes scopes at the call site
+app(ItemQueryContract::class)->first(new WithSlug($slug));
+app(ItemQueryContract::class)->first(new WithDomain($domain));
+app(ItemQueryContract::class)->get(new PublishedItems(), new WithAuthor($authorId));
+
+// ❌ Never add named finder methods — each one hardcodes a Scope that should've been passed in
+public function findBySlug(string $slug): ?ItemDataObject { ... }
+public function findByDomain(string $domain): ?ItemDataObject { ... }
+```
 
 **Rules:**
 - Queries never mutate state — reads only
@@ -431,6 +479,52 @@ Queries are composable read systems. Scopes filter rows. Column selection is exp
 - Every query uses explicit `select([...])` — no SELECT *
 - Scope classes are `final`
 - Query concrete is `final`
+- Build the `Builder` fresh inside each method call — never cache a `Builder` on `$this` across calls. A Query resolved through the container must not carry filter state between calls; scopes are applied per-call from the arguments, not accumulated on the instance.
+- No `matching()`-style stateful/fluent builder method on the Query itself — passing scopes as arguments to `first()`/`get()`/`paginate()` replaces it entirely
+
+**Combining Scopes — AND by default, OR lives inside one Scope.**
+
+Every Scope passed to `first()`/`get()`/`paginate()` is AND'd together automatically — the Query loops over them and calls `apply()` on each. For "A and B", just pass two Scopes:
+
+```php
+app(UserQueryContract::class)->get(
+    new ActiveUsers(),
+    new WithRole($role),
+);
+```
+
+When a condition needs OR logic (e.g. "published OR commented in a date range"), don't invent a combinator — write **one Scope** for that specific condition, with the OR grouped inside its own closure:
+
+```php
+final class PublishedOrCommentedBetween implements UserScope
+{
+    public function __construct(
+        private readonly CarbonImmutable $start,
+        private readonly CarbonImmutable $end,
+    ) {}
+
+    public function apply(Builder $query): void
+    {
+        $query->where(fn (Builder $q) => $q
+            ->whereHas('posts', fn (Builder $p) => $p->whereBetween('published_at', [$this->start, $this->end]))
+            ->orWhereHas('comments', fn (Builder $c) => $c->whereBetween('created_at', [$this->start, $this->end])));
+    }
+}
+```
+
+Used exactly like any other Scope, AND'd alongside the rest:
+
+```php
+app(UserQueryContract::class)->get(
+    new ActiveUsers(),
+    new WithRole($role),
+    new PublishedOrCommentedBetween($start, $end),
+);
+```
+
+**Rule: any Scope with an internal `orWhere`/`orWhereHas` must wrap its own conditions in a single `where(fn (Builder $q) => ...)` closure.** Without the wrapper, the OR leaks out of the scope and breaks the AND precedence with sibling scopes (`active AND role OR published...` instead of `active AND role AND (published OR commented)`). The closure is what keeps the OR contained to one AND'd group.
+
+There is no generic `AnyOf`/`AllOf` combinator — that's premature abstraction for a problem most queries don't have. If a genuinely different OR-shaped condition comes up later, it's another single-purpose Scope, not a tree of composable primitives.
 
 > See the `make-query` skill for full scaffolding steps and code templates.
 
@@ -440,15 +534,25 @@ Queries are composable read systems. Scopes filter rows. Column selection is exp
 | ------------------ | ------------------------------------------------------ | -------------------------- |
 | `ValueObject`      | Represents a domain concept (StarRating, EmailAddress) | Yes — throws on bad data   |
 | `DataObject (in)`  | Carries request data into an Action                    | No — FormRequest does that |
-| `DataObject (out)` | Carries result data out of an Action                   | No                         |
+| `DataObject (out)` | Carries result data out of an Action or Query          | No                         |
 | `Collection`       | Typed container for DTOs                               | No                         |
 | `Snapshot`         | Cross-module data contract                             | No                         |
 
+**DataObject vs Snapshot — the rule is "has it crossed a module boundary yet?"** An Action or Query's native return type is always a DataObject (or a Collection of them) — that's true regardless of who's calling it, Controller or Workflow. A Snapshot only gets created at the exact point data crosses out of its owning module: firing an Event, or a Workflow pulling one module's DataObject to feed into another module's Action/Query (`$dataObject->toSnapshot()`). Never make an Action or Query return a Snapshot directly — that bakes the boundary conversion into the module's internal API instead of doing it at the actual crossing point.
+
 **Never skip a layer.** Don't pass raw arrays into Actions. Don't return Eloquent models from Actions. Don't use Eloquent API Resources — use DTOs consistently throughout.
 
-Typed collections:
+Typed collections use the `DataCollection` trait:
 ```php
-final class ItemCollection extends DataCollection {}
+final class ItemCollection
+{
+    use DataCollection;
+
+    /** @param list<ItemDataObject> $items */
+    public function __construct(private readonly array $items = []) {}
+
+    public static function fromModels(Collection $models): static { ... }
+}
 ```
 
 ### 6. AppResponse — Always Use This
@@ -628,23 +732,25 @@ HttpResponse::SERVER_ERROR  // 500
 
 ### 7. Cross-Module Communication
 
-Cross-module data flows via **Events** (async) or **Snapshots** (sync). Never raw models, never DataObjects, never direct Domain imports.
+Cross-module data flows via **Events** (async) or **Snapshots** (sync). Never raw models, never a DataObject handed directly to another module, never direct Domain imports.
 
-| Scenario                      | Use                              |
-| ----------------------------- | -------------------------------- |
-| Data must exist before return | Query contract → Snapshot (sync) |
-| Recalculate a derived value   | Sync call                        |
-| Send push notification        | Event                            |
-| Update a feed or aggregate    | Event                            |
-| Log audit trail               | Event                            |
+A module's Action/Query contract always returns its own DataObject natively (§5). When that data needs to reach another module — always mediated by a Workflow, never a direct module-to-module call — the Workflow converts it at the point of crossing: `$dataObject->toSnapshot()`.
 
-Event payloads always carry a Snapshot, never a model: `event(new ItemCreated($item->toSnapshot()))`.
+| Scenario                      | Use                                                          |
+| ----------------------------- | ------------------------------------------------------------- |
+| Data must exist before return | Workflow calls Query contract (gets DataObject), converts to Snapshot to pass along or return |
+| Recalculate a derived value   | Sync call                                                      |
+| Send push notification        | Event                                                          |
+| Update a feed or aggregate    | Event                                                          |
+| Log audit trail               | Event                                                          |
+
+Event payloads always carry a Snapshot, never a model and never a DataObject: `event(new ItemCreated($item->toSnapshot()))`.
 
 > See the `make-snapshot` skill for full scaffolding steps and code templates.
 
 ### 8. Value Objects
 
-- `final readonly`, extends `ValueObject`, implements `App\Contracts\ValueObject`
+- `final readonly`, uses `ValueObjectMaker` trait, implements `App\Contracts\ValueObject`
 - Validate in constructor — throw `\InvalidArgumentException` on bad data
 - Implement `equals()` and `__toString()`
 - Named static factory: `StarRating::from($value)`
@@ -782,11 +888,12 @@ protected $model = Item::class;
 
 Follow PHP 8.4 conventions throughout. These are non-negotiable.
 
+- Prefer traits over abstract base classes — share behavior via traits, not inheritance
 - Constructor property promotion — always (`public readonly Foo $foo` in constructor, never a separate property declaration)
 - No empty zero-parameter `__construct()` unless the constructor is private
 - Explicit return types and type hints on all methods — always
 - PHPDoc only for array shapes (`@param array{name: string}`) and generics — no prose docblocks
-- Enum keys in TitleCase (`case Light = 'light'`)
+- Enum cases in UPPER_CASE (`case LIGHT = 'light'`)
 - Always curly braces on control structures — no one-liner `if`
 - Descriptive boolean names: `$isRegisteredForPremium` not `$premium`
 

@@ -4,7 +4,7 @@ namespace App\Tenant\Enums;
 
 enum TenantStatus: string
 {
-    case Active = 'active';
-    case Pending = 'pending';
-    case Suspended = 'suspended';
+    case ACTIVE = 'active';
+    case PENDING = 'pending';
+    case SUSPENDED = 'suspended';
 }

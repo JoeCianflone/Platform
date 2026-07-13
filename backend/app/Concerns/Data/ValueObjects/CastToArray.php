@@ -2,15 +2,13 @@
 
 namespace App\Concerns\Data\ValueObjects;
 
+use App\Support\MakeArray;
+
 trait CastToArray
 {
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function toArray(): array
     {
-        return collect(make_array($this))
-            ->flatMap(fn ($value, $key): array => [$key => $value])
-            ->toArray();
+        return MakeArray::get($this);
     }
 }

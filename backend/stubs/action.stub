@@ -2,10 +2,9 @@
 
 namespace {{ namespace }};
 
-use App\Support\Actions\Action;
 use {{ contractNamespace }}\{{ contractClass }};
 
-final class {{ class }} extends Action implements {{ contractClass }}
+final class {{ class }} implements {{ contractClass }}
 {
     public function handle(): mixed
     {

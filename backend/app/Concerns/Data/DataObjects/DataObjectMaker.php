@@ -23,6 +23,6 @@ trait DataObjectMaker
      */
     public function toArray(): array
     {
-        return get_object_vars($this);
+        return make_array($this);
     }
 }

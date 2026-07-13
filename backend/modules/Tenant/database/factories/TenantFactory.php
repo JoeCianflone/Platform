@@ -21,18 +21,18 @@ final class TenantFactory extends Factory
             'name'   => $name,
             'slug'   => str($name)->slug()->toString(),
             'domain' => null,
-            'status' => TenantStatus::Active,
+            'status' => TenantStatus::ACTIVE,
         ];
     }
 
     public function pending(): static
     {
-        return $this->state(['status' => TenantStatus::Pending]);
+        return $this->state(['status' => TenantStatus::PENDING]);
     }
 
     public function suspended(): static
     {
-        return $this->state(['status' => TenantStatus::Suspended]);
+        return $this->state(['status' => TenantStatus::SUSPENDED]);
     }
 
     public function withDomain(string $domain): static

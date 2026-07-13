@@ -3,10 +3,16 @@
 namespace {{ namespace }};
 
 use App\Contracts\Snapshot as SnapshotContract;
-use App\Support\Snapshots\Snapshot;
+use App\Support\MakeArray;
 
-final readonly class {{ class }} extends Snapshot implements SnapshotContract
+final readonly class {{ class }} implements SnapshotContract
 {
     public function __construct(
     ) {}
+
+    /** @return array<string, mixed> */
+    public function toArray(): array
+    {
+        return MakeArray::get($this);
+    }
 }

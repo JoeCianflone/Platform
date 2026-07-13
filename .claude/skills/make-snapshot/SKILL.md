@@ -40,10 +40,10 @@ cd backend && php artisan make:class Data/Snapshots/{Concept}Snapshot --module={
 
 namespace App\{Name}\Data\Snapshots;
 
-use App\Support\Snapshots\Snapshot;
-use App\{Name}\Eloquent\Models\{Model};
+use App\Contracts\Snapshot as SnapshotContract;
+use App\Support\MakeArray;
 
-final readonly class {Concept}Snapshot extends Snapshot
+final readonly class {Concept}Snapshot implements SnapshotContract
 {
     public function __construct(
         public int $id,
@@ -51,19 +51,17 @@ final readonly class {Concept}Snapshot extends Snapshot
         // ... only the fields other modules need
     ) {}
 
-    public static function fromModel({Model} $model): static
+    /** @return array<string, mixed> */
+    public function toArray(): array
     {
-        return new static(
-            id: $model->id,
-            name: $model->name,
-        );
+        return MakeArray::get($this);
     }
 }
 ```
 
-## Step 3 — Add toSnapshot() to the DataObject
+## Step 3 — Add toSnapshot() to the Model
 
-In `{Name}\Data\DomainObjects\{Concept}DataObject`:
+In `{Name}\Eloquent\Models\{Model}`:
 ```php
 public function toSnapshot(): {Concept}Snapshot
 {
@@ -86,7 +84,7 @@ final class {Concept}Created
 }
 
 // Fired from an Action:
-event(new {Concept}Created($result->toSnapshot()));
+event(new {Concept}Created($model->toSnapshot()));
 ```
 
 ## Step 5 — Consume in a Listener (another module)
@@ -112,7 +110,8 @@ cd backend && vendor/bin/pint --dirty --format agent
 ## Rules
 
 - Snapshots are `final readonly` — always
-- Extend `App\Support\Snapshots\Snapshot`
+- Implement `App\Contracts\Snapshot` — provides the `toArray()` contract
+- Implement `toArray()` via `MakeArray::get($this)` — no traits, no base classes
 - Contain only scalar fields + other Snapshots — no Eloquent models, no DTOs
 - Include only the fields other modules actually need — keep them narrow
 - A module's Snapshot lives in its own `Data/Snapshots/` directory

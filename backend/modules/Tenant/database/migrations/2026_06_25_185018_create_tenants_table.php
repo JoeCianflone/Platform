@@ -13,11 +13,11 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::create('tenants', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('domain')->nullable()->unique();
-            $table->string('status')->default(TenantStatus::Pending->value);
+            $table->string('status')->default(TenantStatus::PENDING->value);
             $table->string('stripe_id')->nullable()->index();
             $table->string('pm_type')->nullable();
             $table->string('pm_last_four', 4)->nullable();

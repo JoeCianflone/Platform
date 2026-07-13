@@ -2,4 +2,8 @@
 
 namespace App\Contracts;
 
-interface Snapshot {}
+interface Snapshot
+{
+    /** @return array<string, mixed> */
+    public function toArray(): array;
+}
